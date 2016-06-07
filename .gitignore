@@ -64,7 +64,4 @@ target/
 .DS_Store
 source_images/
 results/
-<<<<<<< HEAD
 .idea/
-=======
->>>>>>> origin/hough_branch
