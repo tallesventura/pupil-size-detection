@@ -4,34 +4,70 @@ import math
 import cv2
 
 
-IMG_PATH = "pic.jpg"
+IMG_PATH = "source_images/pic.jpg"
 
+GRADIENT_THRESHOLD_FACTOR = 50.0
 
+# ----calculates the displacement vector
 def calc_displacement(x,c):
 
 	vec = x-c
 	return (vec/np.linalg.norm(vec))
 
 
-def calc_obj(c,grads):
+# ----calculates the gradient's magnitudes
+# grads: list with the gradient matrices for the rows and collumns
+def calc_grads_mag(grads):
 
-	total = 0;
-	for i in range(grads[1].shape[0]):
-		for j in range(grads[1].shape[1]):
+	width = grads[0].shape[1]
+	height = grads[0].shape[0]
 
-			xi = np.array([i,j])
+	nor_grads = np.empty((height,width))
 
-			# displacement vector
-			d = calc_displacement(np.array([i,j]),c)
-
-			# gradient at the position (i,j)
+	for i in range(height):
+		for j in range(width):
 			g = np.array([grads[0][i,j],grads[1][i,j]])
-			# normalized gradient
-			norm_g = np.linalg.norm(g-xi)
+			nor_grads[i,j] = math.sqrt(g[0]**2,g[1]**2)
 
-			total += max(0.0,np.dot(d,g))**2
+	return nor_grads
 
-	return total
+# ----function to calculate the threshold for the gradients
+# mags: matrix with the gradients' magnitudes
+def calc_dynamic_threshold(mags,stdDevFactor):
+
+	mags_mean, mags_std = cv2.meanStdDev(mags)
+	stdDev = mags_std[0] / math.sqrt(mags.shape[0]*mags.shape[1])
+	return stdDevFactor * stdDev + mags_mean[0]
+
+
+# ----function to normalize the gradients
+# grads:        list with the gradient matrices for the rows and collumns
+# mags: 	   matrix with the gradients' magnitudes
+# grad_thresh: gradient threshold
+def normalize_grads(grads,mags,grad_thresh):
+
+	width = grads[0].shape[1]
+	height = grads[0].shape[0]
+
+	# list of matrices where the normalized gradients will be stored
+	norm_grads = np.array([np.empty([height,width]),np.empty([height,width])])
+
+	for i in range(height):
+		for j in range(width):
+			magnitude = mags[i,j]
+
+			if(magnitude > grad_thresh):
+				# gradient for x coordinate
+				gX = grads[0][i,j]
+				# gradient for y coordinate
+				gY = grads[1][i,j]
+				# normalized gradient for x coordinate
+				nor_grads[0][i,j] = gX/magnitude
+				# normalized gradient for y coordinate
+				nor_grads[1][i,j] = gY/magnitude
+			else:
+				nor_grads[0][i,j] = 0.0
+				nor_grads[1][i,j] = 0.0
 
 
 def build_obj_matrix(img):
@@ -41,7 +77,10 @@ def build_obj_matrix(img):
 
 	# The matrix of the image's gradients
 	grads = np.gradient(img)
-
+	# Matrix of gradients' magnitude
+	grads_mag = calc_grads_mag(grads)
+	# Calculate the gradient threshold
+	grad_thresh = calc_dynamic_threshold(grads_mag,GRADIENT_THRESHOLD_FACTOR)
 	# number of pixels in the image
 	n_pixels = width * height
 
@@ -59,8 +98,4 @@ def build_obj_matrix(img):
 # =====================================================================================
 img = cv2.imread(IMG_PATH,cv2.IMREAD_GRAYSCALE)
 
-mat = build_obj_matrix(img)
-
-plt.plot(mat)
-plt.show()
 
