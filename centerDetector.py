@@ -4,7 +4,7 @@ import math
 import cv2
 
 
-IMG_PATH = "source_images/pic.jpg"
+IMG_PATH = "source_images/pic2.jpg"
 
 GRADIENT_THRESHOLD_FACTOR = 50.0
 # size of the kernel for the gaussian blur filter
@@ -119,6 +119,13 @@ def test_possible_centers(x, y, weights, gx, gy, out):
 
 	return out 
 
+
+def killEdges(mat):
+
+	height = mat.shape[0]
+	width = mat.shape[1]
+
+	q = Qu
 
 
 def build_obj_matrix(img):
