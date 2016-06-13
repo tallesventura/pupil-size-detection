@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from collections import deque
 import math
 import cv2
 
@@ -120,12 +121,46 @@ def test_possible_centers(x, y, weights, gx, gy, out):
 	return out 
 
 
+def inMat(p, rows, cols):
+	return p[0] >= 0 and p[0] < rows and p[1] >= 0 and p[1] < cols 
+
+
 def killEdges(mat):
 
 	height = mat.shape[0]
 	width = mat.shape[1]
 
-	q = Qu
+	mask = np.empty((height,width))
+	mask[:] = 255
+
+	que = deque([(0,0)])
+
+	while(len(que) != 0):
+		p = popleft()
+		x = p[0]
+		y = p[1]
+
+		if(mat[x,y] == 0.0):
+			continue
+
+		np = (x+1,y)
+		if(inMat(np,height,width)):
+			que.append(np)
+		np = (x-1,y)
+		if(inMat(np,height,width)):
+			que.append(np)
+		np = (x,y+1)
+		if(inMat(np,height,width)):
+			que.append(np)
+		np = (x,y-1)
+		if(inMat(np,height,width)):
+			que.append(np)
+
+
+		mat[x,y] = 0.0
+		mask[x,y] = 0
+
+	return mask, mat
 
 
 def build_obj_matrix(img):
@@ -176,12 +211,18 @@ def build_obj_matrix(img):
 
 
 	minVal, maxVal, minPos, maxPos = cv2.minMaxLoc(out_sum)
-	print("Max pos: ",maxPos)
-	print("Max val: ",maxVal)
+	print("Max pos antes: ",maxPos)
+	print("Max val antes: ",maxVal)
 
+	print("post proessing")
 	floodThresh = maxVal * POST_PROCESS_THRESH
-	#ret,out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
+	ret,out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
 
+	mask, out = killEdges(out)
+	minVal, maxVal, minPos, maxPos = cv2.minMaxLoc(out_sum,mask)
+
+	print("Max pos depois: ",maxPos)
+	print("Max val depois: ",maxVal)
 
 # =====================================================================================
 img = cv2.imread(IMG_PATH,cv2.IMREAD_GRAYSCALE)
