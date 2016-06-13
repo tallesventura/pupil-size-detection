@@ -5,7 +5,7 @@ import math
 import cv2
 
 
-IMG_PATH = "source_images/pic2.jpg"
+IMG_PATH = "source_images/pic4.jpg"
 
 GRADIENT_THRESHOLD_FACTOR = 50.0
 # size of the kernel for the gaussian blur filter
@@ -136,29 +136,31 @@ def killEdges(mat):
 	que = deque([(0,0)])
 
 	while(len(que) != 0):
-		p = popleft()
+		p = que.popleft()
 		x = p[0]
 		y = p[1]
 
 		if(mat[x,y] == 0.0):
 			continue
 
-		np = (x+1,y)
-		if(inMat(np,height,width)):
-			que.append(np)
-		np = (x-1,y)
-		if(inMat(np,height,width)):
-			que.append(np)
-		np = (x,y+1)
-		if(inMat(np,height,width)):
-			que.append(np)
-		np = (x,y-1)
-		if(inMat(np,height,width)):
-			que.append(np)
+		nPoint = (x+1,y)
+		if(inMat(nPoint,height,width)):
+			que.append(nPoint)
+		nPoint = (x-1,y)
+		if(inMat(nPoint,height,width)):
+			que.append(nPoint)
+		nPoint = (x,y+1)
+		if(inMat(nPoint,height,width)):
+			que.append(nPoint)
+		nPoint = (x,y-1)
+		if(inMat(nPoint,height,width)):
+			que.append(nPoint)
 
 
 		mat[x,y] = 0.0
 		mask[x,y] = 0
+
+	mask = np.uint8(mask)
 
 	return mask, mat
 
@@ -207,23 +209,25 @@ def build_obj_matrix(img):
 
 	print("finished calculating the sums")
 	n_grads = weights.shape[0] * weights.shape[1]
-	out_sum *= 1/(n_grads)
+	out_sum = np.float32(out_sum)
+	out_sum *= 1.0/n_grads
 
 
 	minVal, maxVal, minPos, maxPos = cv2.minMaxLoc(out_sum)
-	print("Max pos antes: ",maxPos)
-	print("Max val antes: ",maxVal)
+	print("Max pos before: ",maxPos)
+	print("Max val before: ",maxVal)
 
 	print("post proessing")
 	floodThresh = maxVal * POST_PROCESS_THRESH
-	ret,out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
-
+	#ret,out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
+	ret, out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
 	mask, out = killEdges(out)
 	minVal, maxVal, minPos, maxPos = cv2.minMaxLoc(out_sum,mask)
 
-	print("Max pos depois: ",maxPos)
-	print("Max val depois: ",maxVal)
+	print("Max pos after: ",maxPos)
+	print("Max val after: ",maxVal)
 
+	return maxPos
 # =====================================================================================
 img = cv2.imread(IMG_PATH,cv2.IMREAD_GRAYSCALE)
 print("original img: ",img.shape)
@@ -233,9 +237,12 @@ eye_scaled = cv2.resize(eye,(50,int((50.0/eye.shape[1])*eye.shape[0])))
 print("eye: ",eye.shape)
 print("eye_scaled",eye_scaled.shape)
 
-build_obj_matrix(eye_scaled)
+pos = build_obj_matrix(eye_scaled)
 
+x = pos[0]
+y = pos[1]
 
+eye_scaled[y-1:y+1,x-1:x+1] = 255
 
 plt.subplot(131)
 plt.imshow(img)
