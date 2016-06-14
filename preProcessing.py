@@ -178,7 +178,7 @@ for name in imageNames:
 
     img = cv2.medianBlur(channel, 5)
 
-    ret, th1 = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
+    #ret, img = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
 
     # th2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 3)
     #
@@ -186,12 +186,12 @@ for name in imageNames:
     #
     # titles = ['Original Image', 'Global Thresholding (v = 127)', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
     #
-    # images = [img, th1, th2, th3]
+    # images = [img, img, th2, th3]
 
 
     dirnameErosion = current_folder + "/ErodedImages"
 
-    imageEroded = erosion(th1)
+    imageEroded = erosion(img)
 
     cv2.imwrite(os.path.join(dirnameErosion, fileNumber + ".jpg"), imageEroded)
 
@@ -202,12 +202,12 @@ for name in imageNames:
 
 
 
-    # cv2.imwrite(name, th1)
+    # cv2.imwrite(name, img)
     dirname = current_folder + "/results"
     # fileName =
-    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), th1)
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), img)
 
-    # cv2.imwrite("afterthreshold.jpg",th1)
+    # cv2.imwrite("afterthreshold.jpg",img)
 
 
     # for i in range(4):

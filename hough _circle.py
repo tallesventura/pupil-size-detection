@@ -30,9 +30,8 @@ for i in range(1,36):
 	#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
 	#minRadius: Minimum size of the radius (in pixels).
 	#maxRadius: Maximum size of the radius (in pixels).
-    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 120, param1=45, param2=20, minRadius=0, maxRadius=0)
+    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 400, param1=40, param2=23, minRadius=43, maxRadius=96)
 
-    #min = 30, max = 150
 
 
     if circles is not None:
