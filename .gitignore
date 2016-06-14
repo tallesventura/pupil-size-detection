@@ -65,3 +65,6 @@ target/
 source_images/
 results/
 .idea/
+ErodedImages/
+imagesEqualized/
+circleDetections/
