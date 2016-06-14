@@ -2,9 +2,15 @@
 
 import numpy as np
 import cv2
+import math
 import os
 from matplotlib import pyplot as plt
 
+
+# height shrinkage ratio
+H_RATIO = 0.25
+# width shrinkage ratio
+W_RATIO = 0.2
 
 def createClare(img):
 
@@ -78,6 +84,30 @@ def erosion(image):
     return opening
 
 
+# take the eye area
+def cut_eye_pos(in_img):
+
+
+    out = in_img.copy()
+
+    in_height = in_img.shape[0]
+    in_width = in_img.shape[1]
+
+    # number of rows to be cut from each side
+    n_rows = math.floor(in_height * H_RATIO)
+    # number of collumns to be cut from each side
+    n_col_right = math.floor(in_width * W_RATIO)
+    n_col_left = math.floor(in_width * (W_RATIO+0.15))
+
+
+    # start and end indexes
+    xs = n_rows
+    xe = in_height - n_rows
+    ys = n_col_left
+    ye = in_width - n_col_right
+
+    return out[xs:xe,ys:ye]
+
 
 
 k = 1
@@ -101,6 +131,8 @@ for name in imageNames:
     k += 1
 
     eye = cv2.imread(name)
+    eye = cut_eye_pos(eye)
+
     resultEqualization = createClare(eye)
 
     #hsv results
