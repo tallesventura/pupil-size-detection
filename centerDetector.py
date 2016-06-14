@@ -15,10 +15,14 @@ H_RATIO = 0.25
 # width shrinkage ratio
 W_RATIO = 0.2
 # post process threshold
-POST_PROCESS_THRESH = 0.97
+POST_PROCESS_THRESH = 0.9
+#shrinkage size
+FAST_SIZE_WIDTH = 50
 
 
+# take the eye area
 def cut_eye_pos(in_img):
+
 
 	in_height = in_img.shape[0]
 	in_width = in_img.shape[1]
@@ -28,6 +32,7 @@ def cut_eye_pos(in_img):
 	# number of collumns to be cut from each side
 	n_col_right = math.floor(in_width * W_RATIO)
 	n_col_left = math.floor(in_width * (W_RATIO+0.15))
+
 
 	# start and end indexes
 	xs = n_rows
@@ -120,7 +125,7 @@ def test_possible_centers(x, y, weights, gx, gy, out):
 
 	return out 
 
-
+# Returns whether the given point is inside the row and collumn bounds
 def inMat(p, rows, cols):
 	return p[0] >= 0 and p[0] < rows and p[1] >= 0 and p[1] < cols 
 
@@ -130,12 +135,19 @@ def killEdges(mat):
 	height = mat.shape[0]
 	width = mat.shape[1]
 
+	mat[:,0] = 255
+	mat[:,width-1] = 255
+	mat[0,:] = 255
+	mat[height-1,:] = 255
+	#print(mat)
+
 	mask = np.empty((height,width))
 	mask[:] = 255
 
 	que = deque([(0,0)])
 
 	while(len(que) != 0):
+
 		p = que.popleft()
 		x = p[0]
 		y = p[1]
@@ -165,8 +177,24 @@ def killEdges(mat):
 	return mask, mat
 
 
-def build_obj_matrix(img):
+# Unscale the point coordinates to the original image size
+def unscalePoint(p, origWidth):
+	ratio = float(FAST_SIZE_WIDTH)/origWidth
+	x = round(p[0]/ratio)
+	y = round(p[1]/ratio)
+	return (x,y)
 
+
+# Scale the image down
+def scaleToFastSize(img):
+	return cv2.resize(img,(FAST_SIZE_WIDTH,int((FAST_SIZE_WIDTH/img.shape[1])*img.shape[0])))
+
+
+# Calculates the objective function
+def build_obj_matrix(img_orig):
+
+
+	img = scaleToFastSize(img_orig)
 	width = img.shape[1]
 	height = img.shape[0]
 
@@ -219,37 +247,40 @@ def build_obj_matrix(img):
 
 	print("post proessing")
 	floodThresh = maxVal * POST_PROCESS_THRESH
-	#ret,out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
+
 	ret, out = cv2.threshold(out_sum,floodThresh,0.0,cv2.THRESH_TOZERO)
 	mask, out = killEdges(out)
+	#print(mask)
 	minVal, maxVal, minPos, maxPos = cv2.minMaxLoc(out_sum,mask)
 
 	print("Max pos after: ",maxPos)
 	print("Max val after: ",maxVal)
 
-	return maxPos
+	return unscalePoint(maxPos,img_orig.shape[1])
 # =====================================================================================
 img = cv2.imread(IMG_PATH,cv2.IMREAD_GRAYSCALE)
 print("original img: ",img.shape)
 
 eye = cut_eye_pos(img)
-eye_scaled = cv2.resize(eye,(50,int((50.0/eye.shape[1])*eye.shape[0])))
 print("eye: ",eye.shape)
-print("eye_scaled",eye_scaled.shape)
 
-pos = build_obj_matrix(eye_scaled)
+pos = build_obj_matrix(eye)
 
 x = pos[0]
 y = pos[1]
+print('Maximum: (',x,',',y,')')
 
-eye_scaled[y-1:y+1,x-1:x+1] = 255
+eye[y-15:y+15,x-15:x+15] = 255
 
-plt.subplot(131)
+'''
+plt.subplot(121)
 plt.imshow(img)
-plt.subplot(132)
+plt.subplot(122)
 plt.imshow(eye)
-plt.subplot(133)
-plt.imshow(eye_scaled)
+plt.show()
+'''
+
+plt.imshow(eye)
 plt.show()
 
 
