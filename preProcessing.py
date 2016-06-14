@@ -18,16 +18,16 @@ def createClare(img):
 
     # create a CLAHE object(Contrast Limited Adaptive Histogram Equalization)
 
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl1 = clahe.apply(channelB)
   #  cv2.imwrite('bluechannel.jpg', cl1)
 
-    clahe1 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
+    clahe1 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl2 = clahe1.apply(channelG)
 
    # cv2.imwrite(imageID, cl2)
 
-    clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
+    clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl3 = clahe2.apply(channelR)
     #cv2.imwrite('redChannel.jpg', cl3)
 
@@ -41,12 +41,54 @@ def createClare(img):
 
     return result
 
+def hsvConverter(image, dirname, imageID):
+
+    hsvImage = image
+    cv2.cvtColor(image, cv2.COLOR_BGR2HSV, hsvImage, 3 )
+
+    h = hsvImage[: , : , 0]
+    s = hsvImage[: , : , 1]
+    v = hsvImage[: , : , 2]
+
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
+
+    cv2.imwrite(os.path.join(dirname, imageID+ "hsv.jpg"), hsvImage)
+    cv2.imwrite(os.path.join(dirname, imageID+ " h channel.jpg"), h)
+    cv2.imwrite(os.path.join(dirname, imageID + " s channel.jpg"), s)
+    cv2.imwrite(os.path.join(dirname, imageID + " v channel.jpg"), v)
+
+    return hsvImage,h, s, v
+
+
+
+def erosion(image):
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+
+    # array([[0, 0, 1, 0, 0],
+    #        [1, 1, 1, 1, 1],
+    #        [1, 1, 1, 1, 1],
+    #        [1, 1, 1, 1, 1],
+    #        [0, 0, 1, 0, 0]], dtype = uint8)
+
+
+    opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+
+    return opening
+
+
+
+
+k = 1
+
 current_folder = os.getcwd()
 
 imageNames = []
 
 
 for i in range(1,36):
+
     number = str(i)
 
     image_name = current_folder+"\\source_images" + "\\"+ number + ".jpg"
@@ -55,20 +97,56 @@ for i in range(1,36):
 
 for name in imageNames:
 
+    fileNumber = str(k)
+    k += 1
+
     eye = cv2.imread(name)
     resultEqualization = createClare(eye)
 
-    channel = resultEqualization[:,:,0]
+    #hsv results
+
+    imageHSV, H, S, V = hsvConverter(eye, current_folder, fileNumber)
+
+
+
+    channel = resultEqualization[:,:,2]
+    img_gray = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
+
+
+    imgScale = np.float32(img_gray)/255.0
+    imageResult = imgScale
+    dst = cv2.dct(imgScale)
+    img = np.uint8(dst) * 255
+
+    # print(imageResult)
+    # print(img)
+
+
+
+
+    cv2.imwrite("dst.jpg",dst)
+    cv2.imwrite("img restaurada.jpg", img)
 
     # img = cv2.GaussianBlur(img, (5, 5), 10)
 
     # resultEqualization = createClare(eye)
+
     #
+
     # channel = resultEqualization[:,:,0]
+
+    dirname = current_folder + "\\imagesEqualized"
+
+    # fileName =
+
+
+
+    cv2.imwrite(os.path.join(dirname, fileNumber + ".jpg"), channel)
+
 
     img = cv2.medianBlur(channel, 5)
 
-    ret, th1 = cv2.threshold(img, 41, 255, cv2.THRESH_BINARY)
+    ret, th1 = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
 
     # th2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 3)
     #
@@ -78,7 +156,24 @@ for name in imageNames:
     #
     # images = [img, th1, th2, th3]
 
-    cv2.imwrite(name, th1)
+
+    dirnameErosion = current_folder + "\\ErodedImages"
+
+    imageEroded = erosion(th1)
+
+    cv2.imwrite(os.path.join(dirnameErosion, fileNumber + ".jpg"), imageEroded)
+
+
+    print("funky path :", current_folder)
+
+    print("file name ", fileNumber)
+
+
+
+    # cv2.imwrite(name, th1)
+    dirname = current_folder + "\\results"
+    # fileName =
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), th1)
 
     # cv2.imwrite("afterthreshold.jpg",th1)
 
