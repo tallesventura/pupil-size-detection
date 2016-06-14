@@ -91,7 +91,7 @@ for i in range(1,36):
 
     number = str(i)
 
-    image_name = current_folder+"\\source_images" + "\\"+ number + ".jpg"
+    image_name = current_folder+"/source_images" + "/"+ number + ".jpg"
     imageNames.append(image_name)
     print(image_name)
 
@@ -135,7 +135,7 @@ for name in imageNames:
 
     # channel = resultEqualization[:,:,0]
 
-    dirname = current_folder + "\\imagesEqualized"
+    dirname = current_folder + "/imagesEqualized"
 
     # fileName =
 
@@ -157,7 +157,7 @@ for name in imageNames:
     # images = [img, th1, th2, th3]
 
 
-    dirnameErosion = current_folder + "\\ErodedImages"
+    dirnameErosion = current_folder + "/ErodedImages"
 
     imageEroded = erosion(th1)
 
@@ -171,7 +171,7 @@ for name in imageNames:
 
 
     # cv2.imwrite(name, th1)
-    dirname = current_folder + "\\results"
+    dirname = current_folder + "/results"
     # fileName =
     cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), th1)
 

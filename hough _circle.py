@@ -7,12 +7,12 @@ import os
 # current_folder = os.getcwd()
 current_folder = os.getcwd()
 imageNames = []
-dirname = current_folder + "\\circleDetections"
+dirname = current_folder + "/circleDetections"
 
 for i in range(1,36):
     number = str(i)
 
-    image_name = current_folder+"\\results" + "\\"+ number + ".jpg"
+    image_name = current_folder+"/results" + "/"+ number + ".jpg"
     imageNames.append(image_name)
     print(image_name)
     img = cv2.imread(image_name)
