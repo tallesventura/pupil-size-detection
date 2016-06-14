@@ -33,11 +33,11 @@ def createClare(img):
 
     result = cv2.merge((cl1, cl2, cl3))
 
-    cv2.imwrite("channelb.jpeg", cl1)
-    cv2.imwrite("channelg.jpeg", cl2)
-    cv2.imwrite("channelr.jpeg", cl3)
-
-    cv2.imwrite("result.jpeg", result)
+    # cv2.imwrite("channelb.jpeg", cl1)
+    # cv2.imwrite("channelg.jpeg", cl2)
+    # cv2.imwrite("channelr.jpeg", cl3)
+    #
+    # cv2.imwrite("result.jpeg", result)
 
     return result
 
@@ -53,10 +53,10 @@ def hsvConverter(image, dirname, imageID):
     if not os.path.exists(dirname):
         os.mkdir(dirname)
 
-    cv2.imwrite(os.path.join(dirname, imageID+ "hsv.jpg"), hsvImage)
-    cv2.imwrite(os.path.join(dirname, imageID+ " h channel.jpg"), h)
-    cv2.imwrite(os.path.join(dirname, imageID + " s channel.jpg"), s)
-    cv2.imwrite(os.path.join(dirname, imageID + " v channel.jpg"), v)
+    # cv2.imwrite(os.path.join(dirname, imageID+ "hsv.jpg"), hsvImage)
+    # cv2.imwrite(os.path.join(dirname, imageID+ " h channel.jpg"), h)
+    # cv2.imwrite(os.path.join(dirname, imageID + " s channel.jpg"), s)
+    # cv2.imwrite(os.path.join(dirname, imageID + " v channel.jpg"), v)
 
     return hsvImage,h, s, v
 
@@ -124,8 +124,8 @@ for name in imageNames:
 
 
 
-    cv2.imwrite("dst.jpg",dst)
-    cv2.imwrite("img restaurada.jpg", img)
+    # cv2.imwrite("dst.jpg",dst)
+    # cv2.imwrite("img restaurada.jpg", img)
 
     # img = cv2.GaussianBlur(img, (5, 5), 10)
 
