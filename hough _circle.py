@@ -4,12 +4,14 @@ import cv2
 import numpy as np
 import os
 
+N_IMAGES = 111
+
 # current_folder = os.getcwd()
 current_folder = os.getcwd()
 imageNames = []
 dirname = current_folder + "/circleDetections"
 
-for i in range(1,36):
+for i in range(1,N_IMAGES+1):
     number = str(i)
 
     image_name = current_folder+"/results" + "/"+ number + ".jpg"
@@ -30,7 +32,9 @@ for i in range(1,36):
 	#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
 	#minRadius: Minimum size of the radius (in pixels).
 	#maxRadius: Maximum size of the radius (in pixels).
-    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 400, param1=40, param2=23, minRadius=43, maxRadius=96)
+    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 600, param1=40, param2=15, minRadius=40, maxRadius=96)
+
+    #2 = 18
 
 
 
@@ -45,7 +49,3 @@ for i in range(1,36):
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-else:
-    print("Lascou")
-
-# for name in imageNames:

@@ -8,9 +8,10 @@ from matplotlib import pyplot as plt
 
 
 # height shrinkage ratio
-H_RATIO = 0.25
+H_RATIO = 0.13
 # width shrinkage ratio
-W_RATIO = 0.2
+W_RATIO = 0.1
+N_IMAGES = 111
 
 def createClare(img):
 
@@ -97,7 +98,7 @@ def cut_eye_pos(in_img):
     n_rows = math.floor(in_height * H_RATIO)
     # number of collumns to be cut from each side
     n_col_right = math.floor(in_width * W_RATIO)
-    n_col_left = math.floor(in_width * (W_RATIO+0.15))
+    n_col_left = math.floor(in_width * (W_RATIO+0.18))
 
 
     # start and end indexes
@@ -117,11 +118,11 @@ current_folder = os.getcwd()
 imageNames = []
 
 
-for i in range(1,36):
+for i in range(1,N_IMAGES+1):
 
     number = str(i)
 
-    image_name = current_folder+"/source_images" + "/"+ number + ".jpg"
+    image_name = current_folder+"/source_images/videoCapTest/"+ number + ".jpg"
     imageNames.append(image_name)
     print(image_name)
 
@@ -167,18 +168,18 @@ for name in imageNames:
 
     # channel = resultEqualization[:,:,0]
 
-    dirname = current_folder + "/imagesEqualized"
+    #dirname = current_folder + "/imagesEqualized"
 
     # fileName =
 
 
 
-    cv2.imwrite(os.path.join(dirname, fileNumber + ".jpg"), channel)
+    #cv2.imwrite(os.path.join(dirname, fileNumber + ".jpg"), channel)
 
 
     img = cv2.medianBlur(channel, 5)
 
-    #ret, img = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
+    ret, img = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
 
     # th2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 3)
     #
@@ -189,11 +190,11 @@ for name in imageNames:
     # images = [img, img, th2, th3]
 
 
-    dirnameErosion = current_folder + "/ErodedImages"
+    #dirnameErosion = current_folder + "/ErodedImages"
 
     imageEroded = erosion(img)
 
-    cv2.imwrite(os.path.join(dirnameErosion, fileNumber + ".jpg"), imageEroded)
+    #cv2.imwrite(os.path.join(dirnameErosion, fileNumber + ".jpg"), imageEroded)
 
 
     print("funky path :", current_folder)
