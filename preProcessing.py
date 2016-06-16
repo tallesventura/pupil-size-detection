@@ -131,14 +131,14 @@ for name in imageNames:
     fileNumber = str(k)
     k += 1
 
-    eye = cv2.imread(name)
-    eye = cut_eye_pos(eye)
+    orig_img = cv2.imread(name)
+    eye = cut_eye_pos(orig_img)
 
     resultEqualization = createClare(eye)
 
     #hsv results
 
-    imageHSV, H, S, V = hsvConverter(eye, current_folder, fileNumber)
+    #imageHSV, H, S, V = hsvConverter(eye, current_folder, fileNumber)
 
 
 
@@ -151,48 +151,16 @@ for name in imageNames:
     dst = cv2.dct(imgScale)
     img = np.uint8(dst) * 255
 
-    # print(imageResult)
-    # print(img)
-
-
-
-
-    # cv2.imwrite("dst.jpg",dst)
-    # cv2.imwrite("img restaurada.jpg", img)
-
-    # img = cv2.GaussianBlur(img, (5, 5), 10)
-
-    # resultEqualization = createClare(eye)
-
-    #
 
     # channel = resultEqualization[:,:,0]
-
-    #dirname = current_folder + "/imagesEqualized"
-
-    # fileName =
-
-
-
-    #cv2.imwrite(os.path.join(dirname, fileNumber + ".jpg"), channel)
 
 
     img = cv2.medianBlur(channel, 5)
 
-    ret, img = cv2.threshold(img, 40, 255, cv2.THRESH_BINARY)
-
-    # th2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 3)
-    #
-    # th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 9, 3)
-    #
-    # titles = ['Original Image', 'Global Thresholding (v = 127)', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
-    #
-    # images = [img, img, th2, th3]
+    ret, img = cv2.threshold(img, 36, 255, cv2.THRESH_BINARY)
 
 
-    #dirnameErosion = current_folder + "/ErodedImages"
-
-    imageEroded = erosion(img)
+    #imageEroded = erosion(img)
 
     #cv2.imwrite(os.path.join(dirnameErosion, fileNumber + ".jpg"), imageEroded)
 
