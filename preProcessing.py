@@ -13,6 +13,20 @@ H_RATIO = 0.13
 W_RATIO = 0.1
 N_IMAGES = 242
 
+
+def auto_canny(image, sigma=0.33):
+	# compute the median of the single channel pixel intensities
+	v = np.median(image)
+ 
+	# apply automatic Canny edge detection using the computed median
+	lower = int(max(0, (1.0 - sigma) * v))
+	upper = int(min(255, (1.0 + sigma) * v))
+	edged = cv2.Canny(image, lower, upper)
+ 
+	# return the edged image
+	return edged
+
+
 def createClare(img):
 
     #get path
@@ -110,7 +124,6 @@ def cut_eye_pos(in_img):
     return out[xs:xe,ys:ye]
 
 
-
 k = 1
 
 current_folder = os.getcwd()
@@ -132,9 +145,14 @@ for name in imageNames:
     k += 1
 
     orig_img = cv2.imread(name)
-    eye = cut_eye_pos(orig_img)
 
+    eye = cut_eye_pos(orig_img)
+    img_gray = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
     resultEqualization = createClare(eye)
+    #blured_img = cv2.medianBlur(resultEqualization, 5)
+    blured_img = cv2.GaussianBlur(resultEqualization, (5, 5), 10)
+    #edges = auto_canny(blured_img)
+    
 
     #hsv results
 
@@ -142,22 +160,22 @@ for name in imageNames:
 
 
 
-    channel = resultEqualization[:,:,2]
-    img_gray = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
+    #channel = resultEqualization[:,:,2]
+    #img_gray = cv2.cvtColor(blured_img, cv2.COLOR_BGR2GRAY)
 
 
-    imgScale = np.float32(img_gray)/255.0
-    imageResult = imgScale
-    dst = cv2.dct(imgScale)
-    img = np.uint8(dst) * 255
+    #imgScale = np.float32(img_gray)/255.0
+    #imageResult = imgScale
+    #dst = cv2.dct(imgScale)
+    #img = np.uint8(dst) * 255
 
 
     # channel = resultEqualization[:,:,0]
 
 
-    img = cv2.medianBlur(channel, 5)
+    #img = cv2.medianBlur(channel, 5)
 
-    ret, img = cv2.threshold(img, 45, 255, cv2.THRESH_BINARY)
+    #ret, img = cv2.threshold(img, 45, 255, cv2.THRESH_BINARY)
     #36
 
     #imageEroded = erosion(img)
@@ -174,6 +192,6 @@ for name in imageNames:
 
     dirname = current_folder + "/results"
 
-    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), img)
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
 
     
