@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 H_RATIO = 0.13
 # width shrinkage ratio
 W_RATIO = 0.1
-N_IMAGES = 111
+N_IMAGES = 242
 
 def createClare(img):
 
@@ -157,8 +157,8 @@ for name in imageNames:
 
     img = cv2.medianBlur(channel, 5)
 
-    ret, img = cv2.threshold(img, 36, 255, cv2.THRESH_BINARY)
-
+    ret, img = cv2.threshold(img, 45, 255, cv2.THRESH_BINARY)
+    #36
 
     #imageEroded = erosion(img)
 
@@ -171,16 +171,9 @@ for name in imageNames:
 
 
 
-    # cv2.imwrite(name, img)
+
     dirname = current_folder + "/results"
-    # fileName =
+
     cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), img)
 
-    # cv2.imwrite("afterthreshold.jpg",img)
-
-
-    # for i in range(4):
-    #     plt.subplot(2,2,i+1),plt.imshow(images[i],'gray')
-    #     plt.title(titles[i])
-    #     plt.xticks([]),plt.yticks([])
-    #     plt.show()
+    

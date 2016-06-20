@@ -6,11 +6,12 @@ import os
 import math
 from matplotlib import pyplot as plt
 
-N_IMAGES = 111
+N_IMAGES = 242
 MAX_RADIUS = 80
 MIN_RADIUS = 40
-PROCESS_POS = False 
+PROCESS_POS = False
 PROCESS_RADIUS = True
+ENABLE_POST_PROC = False
 
 all_circles = []
 radius_list = []
@@ -22,6 +23,7 @@ imageNames = []
 dirname = current_folder + "/circleDetections"
 
 
+# Computes the distance between consecutive circles
 def calc_dist_circles(circles):
 
     out = []
@@ -41,9 +43,9 @@ def calc_dist_circles(circles):
     return np.array(out)
 
 
-
 def post_process_circles(circles_orig,radius_list):
 
+    out_radius = radius_list.copy()
     circles = np.array(circles_orig).copy()
     radius_mean = int(np.mean(radius_list))
     radius_std = int(np.std(radius_list))
@@ -60,7 +62,7 @@ def post_process_circles(circles_orig,radius_list):
             #if(abs(radius_list[i] - prev_radius) > radius_std):
             if(abs(r - prev_radius) > radius_std):
                 #print('changed r')
-                radius_list[i] = radius_mean
+                out_radius[i] = radius_mean
                 circles[i][2] = radius_mean
             #prev_radius = radius_list[i]
             prev_radius = r
@@ -81,7 +83,7 @@ def post_process_circles(circles_orig,radius_list):
             prev_x = x
             prev_y = y
 
-    return circles
+    return circles, out_radius
 
 
 def draw_circles(circles):
@@ -116,7 +118,7 @@ for i in range(1,N_IMAGES+1):
 	#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
 	#minRadius: Minimum size of the radius (in pixels).
 	#maxRadius: Maximum size of the radius (in pixels).
-    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 4, 600, param1=50, param2=100, minRadius=MIN_RADIUS, maxRadius=MAX_RADIUS)
+    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 4, 90, param1=50, param2=150, minRadius=MIN_RADIUS, maxRadius=MAX_RADIUS)
     #4, 600, param1=50, param2=100, minRadius=40, maxRadius=80)
 
 
@@ -131,12 +133,24 @@ for i in range(1,N_IMAGES+1):
         #cv2.imwrite(os.path.join(dirname, number + ".jpg"), img)
 
 
-circles_processed = post_process_circles(all_circles,radius_list)
-draw_circles(circles_processed)
+circles_raw = np.array(all_circles).copy()
 
-'''
-plt.plot(images_index,radius_list)
+
+if(ENABLE_POST_PROC):   
+    circles_processed, radius_processed = post_process_circles(all_circles,radius_list)
+    draw_circles(circles_processed)
+    plt.plot(images_index,radius_processed,'r', label='processed')
+    plt.plot(images_index,radius_list,'b', label='raw')
+    
+else:
+    draw_circles(circles_raw)
+    plt.plot(images_index,radius_list,'b', label='raw')
+    
+
+plt.xlabel('Time')
 plt.ylabel('Radius')
+plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1,
+           ncol=2, borderaxespad=0.)
 plt.show()
-'''
+
 
