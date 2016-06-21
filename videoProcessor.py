@@ -6,7 +6,7 @@ import math
 IM_PATH = "source_images/videoCapTest/"
 
 # name of the video file
-VIDEO_NAME = "source_images/v1.mp4"
+VIDEO_NAME = "source_images_video/v1.mp4"
 # The frame capturing rate: the code captures 1 frame every CAP_RATE seconds
 CAP_RATE = 0.5
 

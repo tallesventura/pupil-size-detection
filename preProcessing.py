@@ -94,7 +94,7 @@ def erosion(image):
     #        [0, 0, 1, 0, 0]], dtype = uint8)
 
 
-    opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    opening = cv2.morphologyEx(image, cv2.MORPH_DILATE, kernel)
 
     return opening
 
@@ -191,6 +191,32 @@ for name in imageNames:
 
 
     dirname = current_folder + "/results"
+
+
+    #grayscale
+    equalizedGray = cv2.cvtColor(resultEqualization, cv2.COLOR_BGR2GRAY)
+    originalGray = cv2.cvtColor(blured_img, cv2.COLOR_BGR2GRAY)
+
+
+
+    #choosing the threshold
+    ret, threshold = cv2.threshold(equalizedGray, 50, 255, cv2.THRESH_BINARY)
+    ret2, threshold2 = cv2.threshold(originalGray, 39, 255, cv2.THRESH_BINARY)
+
+    for i in range(4):
+        threshold = erosion(threshold)
+        threshold2 = erosion(threshold2)
+
+
+
+
+
+
+    cv2.imwrite(os.path.join(dirname, fileNumber + "thresholdEqualized.jpg"), threshold)
+
+    cv2.imwrite(os.path.join(dirname, fileNumber + "threshold2.jpg"), threshold2)
+
+    cv2.imwrite(os.path.join(dirname, fileNumber + "resultequalization.jpg"), resultEqualization)
 
     cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
 

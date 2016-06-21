@@ -14,7 +14,7 @@ PROCESS_RADIUS = False
 ENABLE_POST_PROC = False
 
 dict_circles = {}
-#all_circles = []
+all_circles = []
 radius_list = []
 images_index = []
 
@@ -169,7 +169,7 @@ for i in range(1,N_IMAGES+1):
 #circles_raw = np.array(all_circles).copy()
 circles_raw = dict_circles.copy()
 
-if(ENABLE_POST_PROC):   
+if(ENABLE_POST_PROC):
     circles_processed, radius_processed = post_process_circles(all_circles,radius_list)
     draw_circles(circles_processed)
     plt.plot(images_index,radius_processed,'r', label='processed')
