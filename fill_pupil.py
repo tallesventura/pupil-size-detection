@@ -18,8 +18,8 @@ def fill_object(image, center, threshold):
         elif row < mini:
             mini = row
 
-        if (row+1 < img_row) and (col+1 < img_col) and (row>1) and (col>1):
-            neighborhood = [(row, col-1), (row-1, col), (row, col+1), (row+1,col)]
+        if (row+1 < img_row) and (col+1 < img_col) and (row > 1) and (col > 1):
+            neighborhood = [(row, col-1), (row-1, col), (row, col+1), (row+1, col)]
             for n in neighborhood:
                 if image[n] <= threshold:
                     pixels.append(n)
@@ -28,8 +28,21 @@ def fill_object(image, center, threshold):
             break
 
     diameter = maxi - mini
-    print(maxi,mini)
+    print(maxi, mini)
     return image, diameter
+
+
+# img is a binary preprocessed image
+def rough_pupil_point(img):
+    VARIANCE = 55
+    img_inverted =  cv2.bitwise_not(img)
+    row, col = img_inverted.shape
+    gaussian_x = cv2.getGaussianKernel(row, VARIANCE)
+    gaussian_y = cv2.getGaussianKernel(col, VARIANCE)
+    gaussian_weight = gaussian_x * np.transpose(gaussian_y)
+    weighted_image = np.multiply(img_inverted, gaussian_weight)
+    rough_point = np.unravel_index(weighted_image.argmax(), weighted_image.shape)
+    return rough_point
 
 
 if __name__ == '__main__':
@@ -41,5 +54,13 @@ if __name__ == '__main__':
     center = (115,210)
     img2, size = fill_object(img, center, threshold)
     cv2.imshow("test", img2)
-    cv2.waitKey(0)
+    cv2.waitKey(0) & 0xff
     print(size)
+
+    img_equalized = cv2.imread('source_images/equalized.jpg', cv2.IMREAD_GRAYSCALE)
+    img_equalized = cv2.resize(img_equalized, None, fx=0.3, fy=0.3, interpolation=cv2.INTER_LINEAR)
+    point = rough_pupil_point(img_equalized)
+    print(point)
+    cv2.imshow("test", img_equalized)
+    cv2.waitKey(0) & 0xff
+
