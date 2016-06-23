@@ -15,16 +15,16 @@ N_IMAGES = 242
 
 
 def auto_canny(image, sigma=0.33):
-	# compute the median of the single channel pixel intensities
-	v = np.median(image)
- 
-	# apply automatic Canny edge detection using the computed median
-	lower = int(max(0, (1.0 - sigma) * v))
-	upper = int(min(255, (1.0 + sigma) * v))
-	edged = cv2.Canny(image, lower, upper)
- 
-	# return the edged image
-	return edged
+    # compute the median of the single channel pixel intensities
+    v = np.median(image)
+
+    # apply automatic Canny edge detection using the computed median
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+
+    # return the edged image
+    return edged
 
 
 def createClare(img):
@@ -41,12 +41,12 @@ def createClare(img):
 
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl1 = clahe.apply(channelB)
-  #  cv2.imwrite('bluechannel.jpg', cl1)
+    #  cv2.imwrite('bluechannel.jpg', cl1)
 
     clahe1 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl2 = clahe1.apply(channelG)
 
-   # cv2.imwrite(imageID, cl2)
+    # cv2.imwrite(imageID, cl2)
 
     clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     cl3 = clahe2.apply(channelR)
@@ -102,7 +102,6 @@ def erosion(image):
 # take the eye area
 def cut_eye_pos(in_img):
 
-
     out = in_img.copy()
 
     in_height = in_img.shape[0]
@@ -123,6 +122,18 @@ def cut_eye_pos(in_img):
 
     return out[xs:xe,ys:ye]
 
+
+def preprocessing(image):
+
+    eye = cut_eye_pos(image)
+    img_gray = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
+    resultEqualization = createClare(eye)
+    # blured_img = cv2.medianBlur(resultEqualization, 5)
+    blured_img = cv2.GaussianBlur(resultEqualization, (5, 5), 10)
+    # edges = auto_canny(blured_img)
+    preprocessed_image = blured_img
+
+    return preprocessed_image
 
 k = 1
 
@@ -152,7 +163,7 @@ for name in imageNames:
     #blured_img = cv2.medianBlur(resultEqualization, 5)
     blured_img = cv2.GaussianBlur(resultEqualization, (5, 5), 10)
     #edges = auto_canny(blured_img)
-    
+
 
     #hsv results
 

@@ -28,12 +28,13 @@ def fill_object(image, center, threshold):
             break
 
     diameter = maxi - mini
-    print(maxi, mini)
+    #print(maxi, mini)
     return image, diameter
 
 
 # img is a binary preprocessed image
 def rough_pupil_point(img):
+
     VARIANCE = 55
     img_inverted =  cv2.bitwise_not(img)
     row, col = img_inverted.shape
@@ -45,22 +46,53 @@ def rough_pupil_point(img):
     return rough_point
 
 
+def resolution_normalization(image):
+    normalized = cv2.resize(image, (1344, 756), interpolation=cv2.INTER_LINEAR)
+    return normalized
+
+
 if __name__ == '__main__':
 
-    path = 'source_images/2.jpg'
-    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_LINEAR)
-    threshold = 60
-    center = (115,210)
-    img2, size = fill_object(img, center, threshold)
-    cv2.imshow("test", img2)
-    cv2.waitKey(0) & 0xff
-    print(size)
+    # path = 'source_images/2.jpg'
+    # img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    # img = cv2.resize(img, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_LINEAR)
+    # threshold = 60
+    # center = (115,210)
+    # img2, size = fill_object(img, center, threshold)
+    # cv2.imshow("test", img2)
+    # cv2.waitKey(0) & 0xff
+    # print(size)
+    #
+    # img_equalized = cv2.imread('source_images/equalized.jpg', cv2.IMREAD_GRAYSCALE)
+    # img_equalized = cv2.resize(img_equalized, None, fx=0.3, fy=0.3, interpolation=cv2.INTER_LINEAR)
+    # point = rough_pupil_point(img_equalized)
+    # print(point)
+    # cv2.imshow("test", img_equalized)
+    # cv2.waitKey(0) & 0xff
+    import os
+    threshold = 40
+    folder = "source_images/results/"
+    files = [x for x in os.listdir(folder) if os.path.isfile(os.path.join(folder, x))]
+    files.sort()
+    for i in range(0,len(files),2):
 
-    img_equalized = cv2.imread('source_images/equalized.jpg', cv2.IMREAD_GRAYSCALE)
-    img_equalized = cv2.resize(img_equalized, None, fx=0.3, fy=0.3, interpolation=cv2.INTER_LINEAR)
-    point = rough_pupil_point(img_equalized)
-    print(point)
-    cv2.imshow("test", img_equalized)
-    cv2.waitKey(0) & 0xff
+        print(files[i])
+        path = folder+files[i]
+        path_original = folder+files[i+1]
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        center_point = rough_pupil_point(img)
+        img_original = cv2.imread(path_original, cv2.IMREAD_GRAYSCALE)
+        filled_image, size = fill_object(img_original, center_point, threshold)
+        #print(size)
+        # cv2.imshow("pupil", filled_image)
+        # cv2.waitKey(0) & 0xff
+        l = files[i].split('.')
+        result_name = l[0]+"_filled.jpg"
+        current_folder = os.getcwd()
+        result_path = "source_images/fill-pupil"
+        cv2.imwrite(os.path.join(result_path,result_name), filled_image)
+
+
+
+
 
