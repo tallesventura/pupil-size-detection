@@ -7,13 +7,14 @@ import math
 from matplotlib import pyplot as plt
 
 N_IMAGES = 100
+# The maximun radius for the HoughCircles function
 MAX_RADIUS = 80
+# The minimun radius for the HoughCircles function
 MIN_RADIUS = 40
-PROCESS_POS = False
-PROCESS_RADIUS = False
 ENABLE_POST_PROC = False
+# The frame capturing rate: the code captures 1 frame every CAP_RATE seconds 
 CAPTURE_RATE = 0.5
-PERCENTAGE_BLACK_THRESHOLD = 10
+PERCENTAGE_BLACK_THRESHOLD = 40
 
 dict_circles = {}
 images_index = []
@@ -54,40 +55,8 @@ def calc_dist_circles(circles):
 
     return np.array(out)
 
-
-def post_process_circles(circles_dict):
-
-    out_dict = circles_dict.copy()
-    circles = list(circles_dict.values())
-    list_radius = get_radius_list(circles_dict)
-    list_centers = []
-
-    for i in range(len(images_index)):
-        x = circles[i][0]
-        y = circles[i][1]
-        list_centers.append((x,y))
-
-    out_radius = list_radius.copy()
-    radius_mean = int(np.mean(list_radius))
-    radius_std = int(np.std(list_radius))
-
-
-    #print('Radius std: ',radius_std)
-
-    prev_radius = radius_mean
-    for i in range(len(list_radius)):
-        r = list_radius[i]
-        c = circles_dict[str(i+1)]
-        if(abs(r - prev_radius) > radius_std):
-            out_radius[i] = prev_radius
-            c[2] = prev_radius
-            out_dict[str(i)] = c
-        prev_radius = r
-
-
-    return out_dict, out_radius
-
-
+# circles: 		dictionary with the name of the images as keys and the circle parameters as values
+# dest_folder:	path to the folder where the images will be saved
 def draw_circles(circles,dest_folder):
 	keys = list(circles.keys())
 	for k in keys:
@@ -109,6 +78,7 @@ def draw_circles(circles,dest_folder):
 		cv2.imwrite(dest_path, img)
 
 
+# circle:	list with a circle's parameters (x,y,radius)
 def count_pixels(img, circle):
     
     x = circle[1]
@@ -135,6 +105,7 @@ def count_pixels(img, circle):
     return black, white
 
 
+# circs: dictionary with the name of the images as keys and the circle parameters as values
 def select_circles(circs):
 
 	out = {}
@@ -165,6 +136,7 @@ def select_circles(circs):
 	return out
 
 
+# list_areas: list with the areas of the circles
 def get_baseline_area(list_areas):
 	n_frames = int(5*(1/CAPTURE_RATE))
 	print("n_frames:",n_frames)
@@ -172,6 +144,7 @@ def get_baseline_area(list_areas):
 	return np.mean(l)
 
 
+# list_areas: list with the areas of the circles
 def get_percentage_area(list_areas, baseline_area):
 
 	out = []
@@ -181,6 +154,7 @@ def get_percentage_area(list_areas, baseline_area):
 	return out
 
 
+# list_radius: list with the radius of the circles
 def get_areas(list_radius):
 	out = []
 	for r in list_radius:
@@ -189,6 +163,8 @@ def get_areas(list_radius):
 	return out
 
 
+# Reading the images and finding the circles
+#=============================================================================================================
 for i in range(1,N_IMAGES+1):
 	number = str(i)
 
