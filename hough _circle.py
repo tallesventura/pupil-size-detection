@@ -12,9 +12,9 @@ MAX_RADIUS = 80
 # The minimun radius for the HoughCircles function
 MIN_RADIUS = 40
 ENABLE_POST_PROC = False
-# The frame capturing rate: the code captures 1 frame every CAP_RATE seconds 
+# The frame capturing rate: the code captures 1 frame every CAP_RATE seconds
 CAPTURE_RATE = 0.5
-PERCENTAGE_BLACK_THRESHOLD = 40
+PERCENTAGE_BLACK_THRESHOLD = 10
 
 dict_circles = {}
 images_index = []
@@ -27,13 +27,13 @@ dirname = current_folder + "/circleDetections"
 
 
 def get_radius_list(circles_dict):
-    circles = list(circles_dict.values())
-    list_radius = []
+	keys = sorted(list(circles_dict.keys()))
+	list_radius = []
 
-    for i in range(len(circles)):
-        list_radius.append(circles[i][2])
+	for i in range(len(keys)):
+		list_radius.append(circles_dict[keys[i]][2])
 
-    return list_radius
+	return list_radius
 
 
 # Computes the distance between consecutive circles
@@ -43,7 +43,7 @@ def calc_dist_circles(circles):
     x1 = circles[0][0]
     y1 = circles[0][1]
 
-    for i in range(1,len(circles)):
+    for i in range(1, len(circles)):
         x = circles[i][0]
         y = circles[i][1]
         dx = x1 - x
@@ -57,12 +57,12 @@ def calc_dist_circles(circles):
 
 # circles: 		dictionary with the name of the images as keys and the circle parameters as values
 # dest_folder:	path to the folder where the images will be saved
-def draw_circles(circles,dest_folder):
+def draw_circles(circles, dest_folder):
 	keys = list(circles.keys())
 	for k in keys:
 		img_circles = circles.get(k)
-		src_path = current_folder+"/results/gray scale/"+ k + ".jpg"
-		dest_path = dest_folder+'/'+k + ".jpg"
+		src_path = current_folder+"/results/gray scale/"+ str(k) + ".jpg"
+		dest_path = dest_folder+'/'+str(k) + ".jpg"
 		img = cv2.imread(src_path)
 
 		if(type(img_circles) is list):
@@ -80,7 +80,6 @@ def draw_circles(circles,dest_folder):
 
 # circle:	list with a circle's parameters (x,y,radius)
 def count_pixels(img, circle):
-    
     x = circle[1]
     y = circle[0]
     r = circle[2]
@@ -112,7 +111,7 @@ def select_circles(circs):
 	keys = list(circs.keys())
 	for k in keys:
 		img_circles = circs.get(k)
-		src_path = current_folder+"/results/binary/"+ k + ".jpg"
+		src_path = current_folder+"/results/binary/"+ str(k) + ".jpg"
 		img = cv2.imread(src_path,cv2.IMREAD_GRAYSCALE)
 		blackP_list = []
 		whiteP_list = []
@@ -196,14 +195,14 @@ for i in range(1,N_IMAGES+1):
 		for c in circles[0,:]:
 			cur_img_circles.append(c)
 		images_index.append(i)
-		dict_circles[number] = cur_img_circles
+		dict_circles[i] = cur_img_circles
 #============================================================================================================
 
 
 circles_raw = dict_circles.copy()
 print("Selecting the best circle")
 circs = select_circles(circles_raw)
-indexes = list(circs.keys())
+indexes = sorted(list(circs.keys()))
 print("n_images: ", len(indexes))
 list_radius = get_radius_list(circs)
 list_areas = get_areas(list_radius)
@@ -224,7 +223,7 @@ else:
 	print("drawing the circles")
 	draw_circles(circs,dirname)
 	print("plotting the graph")
-	plt.plot(indexes,percentage_areas,'bo', label='raw')
+	plt.plot(indexes,percentage_areas,'b', label='raw')
 
 plt.xlabel("Time (sec.)")
 plt.ylabel('% \of Baseline Area')
