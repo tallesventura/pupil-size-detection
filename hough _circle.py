@@ -16,17 +16,18 @@ MIN_RADIUS = 40
 ENABLE_POST_PROC = False
 # The frame capturing rate: the code captures 1 frame every CAP_RATE seconds
 CAPTURE_RATE = 0.5
-PERCENTAGE_BLACK_THRESHOLD = 40
+PERCENTAGE_BLACK_THRESHOLD = 25
 
-THRESH_POS = 10
-THRESH_INC_DEC = 7
+THRESH_POS = 5
+THRESH_INC_DEC = 3
+THRESH_IT_NOT_IMPROV = 40
 LOWER_P1 = 8
-UPPER_P1 = 175
+UPPER_P1 = 300
 LOWER_P2 = 30
-UPPER_P2 = 450
+UPPER_P2 = 600
 LOWER_MIN_DIST = 100
 UPPER_MIN_DIST = 700
-MAX_DP = 8
+MAX_DP = 10
 
 #dict_circles = {}
 images_index = []
@@ -228,20 +229,33 @@ def parameter_tunning(n_iter, sol, n_imgs):
 	inc_dec = random.randint(0,1)
 	prev_inc_dec = inc_dec
 	n_it_not_improved = 0
+	pos_not_improved = 0
+	inc_dec_not_improved = 0
 
 	for i in range(n_iter):
+		if(n_it_not_improved >= THRESH_IT_NOT_IMPROV):
+			break
+
 		print("iteration ",i+1)
-		if(n_it_not_improved >= THRESH_POS):
+		if(pos_not_improved >= THRESH_POS):
+			#sol = best_sol
 			pos = random.randint(0,3)
+			inc_dec_not_improved = 0
 			inc_dec = random.randint(0,1)
 			while(pos == prev_pos):
 				pos = random.randint(0,3)
+		else:
+			pos = prev_pos
 
-		if(n_it_not_improved >= THRESH_INC_DEC):
-				if(prev_inc_dec == 0):
-					inc_dec = 1
-				else:
-					inc_dec = 0
+		if(inc_dec_not_improved >= THRESH_INC_DEC):
+			#sol = best_sol
+			if(prev_inc_dec == 0):
+				inc_dec = 1
+			else:
+				inc_dec = 0
+		else:
+			inc_dec = prev_inc_dec
+
 
 		ratio = random.random() + 0.1
 
@@ -255,7 +269,7 @@ def parameter_tunning(n_iter, sol, n_imgs):
 			if(inc_dec == 0):
 				cur_sol[pos] = max(int(n - n*ratio),1)
 			else:
-				cur_sol[pos] = min(int(n + n*ratio),MAX_DP)
+				cur_sol[pos] = int(n + n*ratio)
 		elif(pos == 1):
 			n =  cur_sol[pos]
 			if(n < LOWER_MIN_DIST):
@@ -264,9 +278,9 @@ def parameter_tunning(n_iter, sol, n_imgs):
 				inc_dec = 0
 
 			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_MIN_DIST)
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_MIN_DIST-1)
 			else:
-				cur_sol[pos] = min(int(n + n*ratio),UPPER_MIN_DIST)
+				cur_sol[pos] = int(n + n*ratio)
 		elif(pos == 2):
 			n =  cur_sol[pos]
 			if(n < LOWER_P1):
@@ -275,9 +289,9 @@ def parameter_tunning(n_iter, sol, n_imgs):
 				inc_dec = 0
 
 			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_P1)
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_P1-1)
 			else:
-				cur_sol[pos] = min(int(n + n*ratio),UPPER_P1)
+				cur_sol[pos] = int(n + n*ratio)
 		elif(pos == 3):
 			n =  cur_sol[pos]
 			if(n < LOWER_P2):
@@ -286,34 +300,39 @@ def parameter_tunning(n_iter, sol, n_imgs):
 				inc_dec = 0
 			
 			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_P2)
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_P2-1)
 			else:
-				cur_sol[pos] = min(int(n + n*ratio),UPPER_P2)
+				cur_sol[pos] = int(n + n*ratio)
 
 		dict_circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
 		dict_circles = select_circles(dict_circles)
 		cur_obj = len(dict_circles)
-
-		prev_inc_dec = inc_dec
-		prev_pos = pos
+		print("n_images: ", cur_obj)
+		print("dp: ",cur_sol[0]," minDist: ",cur_sol[1]," p1: ",cur_sol[2]," p2: ",cur_sol[3])
 
 		if(cur_obj > best_obj):
 			best_obj = cur_obj
 			best_sol = cur_sol
 			n_it_not_improved = 0
+			pos_not_improved = 0
+			inc_dec_not_improved = 0
 		else:
 			n_it_not_improved += 1
+			pos_not_improved += 1
+			inc_dec_not_improved += 1
+
+		prev_inc_dec = inc_dec
+		prev_pos = pos
 
 
 	return best_sol
 
 
 print("Tunning parameters")
-#time_before = time.clock()
-#sol = parameter_tunning(50,[2,100,20,100],20)
-#time_after = time.clock()
-#print("parameter tunning completed in: ",time_after - time_before)
-sol = [1,380,70,56]
+time_before = time.clock()
+sol = parameter_tunning(70,[2,100,20,100],25)
+time_after = time.clock()
+print("parameter tunning completed in: ",time_after - time_before)
 print("dp: ",sol[0]," minDist: ",sol[1]," p1: ",sol[2]," p2: ",sol[3])
 print("Generating circles")
 circles_raw = generate_circles(sol[0],sol[1],sol[2],sol[3],100)
