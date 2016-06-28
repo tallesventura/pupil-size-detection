@@ -94,7 +94,7 @@ def erosion(image):
     #        [0, 0, 1, 0, 0]], dtype = uint8)
 
 
-    opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    opening = cv2.morphologyEx(image, cv2.MORPH_DILATE, kernel)
 
     return opening
 
@@ -147,11 +147,11 @@ for name in imageNames:
     orig_img = cv2.imread(name)
 
     eye = cut_eye_pos(orig_img)
-    img_gray = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
     resultEqualization = createClare(eye)
+    img_gray = cv2.cvtColor(resultEqualization, cv2.COLOR_BGR2GRAY)
     #blured_img = cv2.medianBlur(resultEqualization, 5)
-    blured_img = cv2.GaussianBlur(resultEqualization, (5, 5), 10)
-    #edges = auto_canny(blured_img)
+    blured_img = cv2.GaussianBlur(img_gray, (5, 5), 10)
+    edges = cv2.Canny(blured_img, 20, 120)
     
 
     #hsv results
@@ -175,7 +175,12 @@ for name in imageNames:
 
     #img = cv2.medianBlur(channel, 5)
 
-    #ret, img = cv2.threshold(img, 45, 255, cv2.THRESH_BINARY)
+    ret, bin_img = cv2.threshold(blured_img, 39, 255, cv2.THRESH_BINARY)
+
+    for i in range(4):
+        bin_img = erosion(bin_img)
+
+
     #36
 
     #imageEroded = erosion(img)
@@ -189,9 +194,11 @@ for name in imageNames:
 
 
 
-
-    dirname = current_folder + "/results"
-
-    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
+    dirname = current_folder + "/results/edges/"
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), edges)
+    dirname = current_folder + "/results/gray scale/"
+    #cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
+    dirname = current_folder + "/results/binary/"
+    #cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), bin_img)
 
     
