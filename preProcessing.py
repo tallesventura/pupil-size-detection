@@ -5,6 +5,7 @@ import cv2
 import math
 import os
 from matplotlib import pyplot as plt
+from edgeDetectors import edge
 
 
 # height shrinkage ratio
@@ -151,7 +152,7 @@ for name in imageNames:
     img_gray = cv2.cvtColor(resultEqualization, cv2.COLOR_BGR2GRAY)
     #blured_img = cv2.medianBlur(resultEqualization, 5)
     blured_img = cv2.GaussianBlur(img_gray, (5, 5), 10)
-    edges = cv2.Canny(blured_img, 20, 120)
+    #edges = edge(blured_img)
     
 
     #hsv results
@@ -194,11 +195,11 @@ for name in imageNames:
 
 
 
-    dirname = current_folder + "/results/edges/"
-    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), edges)
+    #dirname = current_folder + "/results/edges/"
+    #cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), edges)
     dirname = current_folder + "/results/gray scale/"
-    #cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), blured_img)
     dirname = current_folder + "/results/binary/"
-    #cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), bin_img)
+    cv2.imwrite(os.path.join(dirname,fileNumber + ".jpg"), bin_img)
 
     

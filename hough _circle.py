@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import os
 import math
+import random
+import time
 from matplotlib import pyplot as plt
 
 N_IMAGES = 100
@@ -14,13 +16,22 @@ MIN_RADIUS = 40
 ENABLE_POST_PROC = False
 # The frame capturing rate: the code captures 1 frame every CAP_RATE seconds
 CAPTURE_RATE = 0.5
-PERCENTAGE_BLACK_THRESHOLD = 10
+PERCENTAGE_BLACK_THRESHOLD = 40
 
-dict_circles = {}
+THRESH_POS = 10
+THRESH_INC_DEC = 7
+LOWER_P1 = 8
+UPPER_P1 = 175
+LOWER_P2 = 30
+UPPER_P2 = 450
+LOWER_MIN_DIST = 100
+UPPER_MIN_DIST = 700
+MAX_DP = 8
+
+#dict_circles = {}
 images_index = []
 radius_list = []
 
-# current_folder = os.getcwd()
 current_folder = os.getcwd()
 imageNames = []
 dirname = current_folder + "/circleDetections"
@@ -162,44 +173,150 @@ def get_areas(list_radius):
 	return out
 
 
-# Reading the images and finding the circles
-#=============================================================================================================
-for i in range(1,N_IMAGES+1):
-	number = str(i)
+def generate_circles(dp, min_dist, p1, p2, n_imgs = N_IMAGES):
+	# Reading the images and finding the circles
+	
+	dict_circles = {}
+	for i in range(1,n_imgs+1):
+		number = str(i)
 
-	image_name = current_folder+"/results/gray scale/"+ number + ".jpg"
-	imageNames.append(image_name)
-	print(image_name)
-	img = cv2.imread(image_name)
-
-
-	img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	print(img.shape)
+		image_name = current_folder+"/results/gray scale/"+ number + ".jpg"
+		imageNames.append(image_name)
+		#print(image_name)
+		img = cv2.imread(image_name,cv2.IMREAD_GRAYSCALE)
 
 
-	#dp: This parameter is the inverse ratio of the accumulator resolution to the image resolution (see Yuen et al. for more details). Essentially, the larger the dp gets, the smaller the accumulator array gets.
-	#minDist: Minimum distance between the center (x, y) coordinates of detected circles. If the minDist is too small, multiple circles in the same neighborhood as the original may be (falsely) detected. If the minDist is too large, then some circles may not be detected at all.
-	#param1: Gradient value used to handle edge detection in the Yuen et al. method.
-	#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
-	#minRadius: Minimum size of the radius (in pixels).
-	#maxRadius: Maximum size of the radius (in pixels).
-	circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 2, 100, param1=20, param2=100, minRadius=MIN_RADIUS, maxRadius=MAX_RADIUS)
-	#2, 100, param1=20, param2=100, minRadius=40, maxRadius=80)
-	#2, 30, param1=20, param2=130, minRadius=40, maxRadius=80)
-	#2, 30, param1=20, param2=115, minRadius=40, maxRadius=80)
+		#img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+		#print(img.shape)
 
 
-	cur_img_circles = []
-	if circles is not None:
-		circles = np.uint16(np.around(circles))
-		for c in circles[0,:]:
-			cur_img_circles.append(c)
-		images_index.append(i)
-		dict_circles[i] = cur_img_circles
+		#dp: This parameter is the inverse ratio of the accumulator resolution to the image resolution (see Yuen et al. for more details). Essentially, the larger the dp gets, the smaller the accumulator array gets.
+		#minDist: Minimum distance between the center (x, y) coordinates of detected circles. If the minDist is too small, multiple circles in the same neighborhood as the original may be (falsely) detected. If the minDist is too large, then some circles may not be detected at all.
+		#param1: Gradient value used to handle edge detection in the Yuen et al. method.
+		#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
+		#minRadius: Minimum size of the radius (in pixels).
+		#maxRadius: Maximum size of the radius (in pixels).
+		circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, dp, min_dist, param1=p1, param2=p2, minRadius=MIN_RADIUS, maxRadius=MAX_RADIUS)
+		#2, 100, param1=20, param2=100, minRadius=40, maxRadius=80)
+		#2, 30, param1=20, param2=130, minRadius=40, maxRadius=80)
+		#2, 30, param1=20, param2=115, minRadius=40, maxRadius=80)
+
+
+		cur_img_circles = []
+		if circles is not None:
+			
+			circles = np.uint16(np.around(circles))
+			for c in circles[0,:]:
+				cur_img_circles.append(c)
+			images_index.append(i)
+			dict_circles[i] = cur_img_circles
+
+	return dict_circles
 #============================================================================================================
 
 
-circles_raw = dict_circles.copy()
+def parameter_tunning(n_iter, sol, n_imgs):
+
+	random.seed()
+	best_sol = sol.copy()
+	cur_sol = sol.copy()
+	dict_circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
+	dict_circles = select_circles(dict_circles)
+	best_obj = len(dict_circles)
+	pos = random.randint(0,3)
+	prev_pos = pos
+	inc_dec = random.randint(0,1)
+	prev_inc_dec = inc_dec
+	n_it_not_improved = 0
+
+	for i in range(n_iter):
+		print("iteration ",i+1)
+		if(n_it_not_improved >= THRESH_POS):
+			pos = random.randint(0,3)
+			inc_dec = random.randint(0,1)
+			while(pos == prev_pos):
+				pos = random.randint(0,3)
+
+		if(n_it_not_improved >= THRESH_INC_DEC):
+				if(prev_inc_dec == 0):
+					inc_dec = 1
+				else:
+					inc_dec = 0
+
+		ratio = random.random() + 0.1
+
+		if(pos == 0):
+			n =  cur_sol[pos]
+			if(n < 1):
+				inc_dec = 1
+			elif(n > MAX_DP):
+				inc_dec = 0
+
+			if(inc_dec == 0):
+				cur_sol[pos] = max(int(n - n*ratio),1)
+			else:
+				cur_sol[pos] = min(int(n + n*ratio),MAX_DP)
+		elif(pos == 1):
+			n =  cur_sol[pos]
+			if(n < LOWER_MIN_DIST):
+				inc_dec = 1
+			elif(n > UPPER_MIN_DIST):
+				inc_dec = 0
+
+			if(inc_dec == 0):
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_MIN_DIST)
+			else:
+				cur_sol[pos] = min(int(n + n*ratio),UPPER_MIN_DIST)
+		elif(pos == 2):
+			n =  cur_sol[pos]
+			if(n < LOWER_P1):
+				inc_dec = 1
+			elif(n > UPPER_P1):
+				inc_dec = 0
+
+			if(inc_dec == 0):
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_P1)
+			else:
+				cur_sol[pos] = min(int(n + n*ratio),UPPER_P1)
+		elif(pos == 3):
+			n =  cur_sol[pos]
+			if(n < LOWER_P2):
+				inc_dec = 1
+			elif(n > UPPER_P2):
+				inc_dec = 0
+			
+			if(inc_dec == 0):
+				cur_sol[pos] = max(int(n - n*ratio),LOWER_P2)
+			else:
+				cur_sol[pos] = min(int(n + n*ratio),UPPER_P2)
+
+		dict_circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
+		dict_circles = select_circles(dict_circles)
+		cur_obj = len(dict_circles)
+
+		prev_inc_dec = inc_dec
+		prev_pos = pos
+
+		if(cur_obj > best_obj):
+			best_obj = cur_obj
+			best_sol = cur_sol
+			n_it_not_improved = 0
+		else:
+			n_it_not_improved += 1
+
+
+	return best_sol
+
+
+print("Tunning parameters")
+#time_before = time.clock()
+#sol = parameter_tunning(50,[2,100,20,100],20)
+#time_after = time.clock()
+#print("parameter tunning completed in: ",time_after - time_before)
+sol = [1,380,70,56]
+print("dp: ",sol[0]," minDist: ",sol[1]," p1: ",sol[2]," p2: ",sol[3])
+print("Generating circles")
+circles_raw = generate_circles(sol[0],sol[1],sol[2],sol[3],100)
 print("Selecting the best circle")
 circs = select_circles(circles_raw)
 indexes = sorted(list(circs.keys()))
@@ -230,4 +347,3 @@ plt.ylabel('% \of Baseline Area')
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1,
        ncol=2, borderaxespad=0.)
 plt.show()
-
