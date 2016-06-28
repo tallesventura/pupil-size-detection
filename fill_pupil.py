@@ -10,6 +10,7 @@ def fill_object(image, center, threshold):
     pixels = [center]
     img_row, img_col = image.shape
     bw_image = np.zeros(image.shape, np.uint8)
+    area = 0
     for pxl in pixels:
         row, col = pxl
 
@@ -27,13 +28,17 @@ def fill_object(image, center, threshold):
     if contours and len(contours[0]) > 5:
         cnt = contours[0]
         ellipse = cv2.fitEllipse(cnt)
-        print(ellipse)
-        cv2.ellipse(image, ellipse, 255, 2)
+        minor_axis, major_axis = ellipse[1]
+        eccentricity = math.sqrt((1 - (minor_axis**2/major_axis**2)))
+        if eccentricity <= 0.80:
+            cv2.ellipse(image, ellipse, 255, 2)
+            area = math.pi*major_axis*minor_axis
+        else:
+            area = 0
     # cv2.imshow("r", img2)
     # cv2.waitKey(0)
     # print(maxi, mini)
-    size = 0
-    return image, size
+    return image, area
 
 
 # img is a binary preprocessed image
@@ -70,18 +75,19 @@ if __name__ == '__main__':
     folder = "source_images/results/"
     files = [x for x in os.listdir(folder) if os.path.isfile(os.path.join(folder, x))]
     files.sort()
-    size_list = []
+    area_list = []
     for i in range(0, len(files), 2):
 
-        # print(files[i])
+        print(files[i])
         path = folder+files[i]
         path_original = folder+files[i+1]
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         center_point = rough_pupil_point(img)
         img_original = cv2.imread(path_original, cv2.IMREAD_GRAYSCALE)
-        filled_image, size = fill_object(img_original, center_point, threshold)
-        if size > 0 :
-            size_list.append(size)
+        filled_image, area = fill_object(img_original, center_point, threshold)
+        if area > 0:
+            print(area)
+            area_list.append(area)
         # print(size)
         # cv2.imshow("pupil", filled_image)
         # cv2.waitKey(0) & 0xff
@@ -92,6 +98,7 @@ if __name__ == '__main__':
         cv2.imwrite(os.path.join(result_path,result_name), filled_image)
 
     import matplotlib.pyplot as plt
-    plt.plot(size_list)
+    #area_list = nan_cleaning(area_list)
+    plt.plot(area_list)
     plt.ylabel("size in pixels")
     plt.show()
