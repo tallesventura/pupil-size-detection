@@ -7,19 +7,19 @@ import math
 import random
 import time
 from matplotlib import pyplot as plt
+from collections import deque
 
 N_IMAGES = 100
 # The maximun radius for the HoughCircles function
 MAX_RADIUS = 80
 # The minimun radius for the HoughCircles function
-MIN_RADIUS = 40
+MIN_RADIUS = 30
 ENABLE_POST_PROC = False
 # The frame capturing rate: the code captures 1 frame every CAP_RATE seconds
 CAPTURE_RATE = 0.5
-PERCENTAGE_BLACK_THRESHOLD = 25
+PERCENTAGE_BLACK_THRESHOLD = 10
 
-THRESH_POS = 5
-THRESH_INC_DEC = 3
+MAX_ITER_LS = 5
 THRESH_IT_NOT_IMPROV = 40
 LOWER_P1 = 8
 UPPER_P1 = 300
@@ -149,8 +149,9 @@ def select_circles(circs):
 
 # list_areas: list with the areas of the circles
 def get_baseline_area(list_areas):
-	n_frames = int(5*(1/CAPTURE_RATE))
-	print("n_frames:",n_frames)
+	#n_frames = int(5*(1/CAPTURE_RATE))
+	n_frames = min(int(round(len(list_areas)*0.045)),len(list_areas))
+	#print("n_frames:",n_frames)
 	l = list_areas[:n_frames]
 	return np.mean(l)
 
@@ -216,126 +217,120 @@ def generate_circles(dp, min_dist, p1, p2, n_imgs = N_IMAGES):
 #============================================================================================================
 
 
-def parameter_tunning(n_iter, sol, n_imgs):
+def local_search(sol,obj,n_imgs):
 
-	random.seed()
-	best_sol = sol.copy()
 	cur_sol = sol.copy()
-	dict_circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
-	dict_circles = select_circles(dict_circles)
-	best_obj = len(dict_circles)
-	pos = random.randint(0,3)
-	prev_pos = pos
+	cur_obj = obj
+	best_sol = sol.copy()
+	best_obj = obj
+	improved = False
+
+	ratio = random.random() + 0.1
 	inc_dec = random.randint(0,1)
-	prev_inc_dec = inc_dec
-	n_it_not_improved = 0
-	pos_not_improved = 0
-	inc_dec_not_improved = 0
+	pos = random.randint(0,3)
 
-	for i in range(n_iter):
-		if(n_it_not_improved >= THRESH_IT_NOT_IMPROV):
-			break
-
-		print("iteration ",i+1)
-		if(pos_not_improved >= THRESH_POS):
-			#sol = best_sol
-			pos = random.randint(0,3)
-			inc_dec_not_improved = 0
-			inc_dec = random.randint(0,1)
-			while(pos == prev_pos):
-				pos = random.randint(0,3)
+	for i in range(1,MAX_ITER_LS+1):
+		n = cur_sol[pos]
+		if(inc_dec == 0):			
+			if(pos == 0):
+				cur_sol[pos] =  max(int(n - (n*ratio)/i),1)
+			elif(pos == 1):
+				cur_sol[pos] =  max(int(n - (n*ratio)/i),LOWER_MIN_DIST-1)
+			elif(pos == 2):
+				cur_sol[pos] =  max(int(n - (n*ratio)/i),LOWER_P1-1)
+			elif(pos == 3):
+				cur_sol[pos] =  max(int(n - (n*ratio)/i),LOWER_P2-1)
 		else:
-			pos = prev_pos
+			cur_sol[pos] = int(n + (n*ratio)/i)
 
-		if(inc_dec_not_improved >= THRESH_INC_DEC):
-			#sol = best_sol
-			if(prev_inc_dec == 0):
-				inc_dec = 1
-			else:
-				inc_dec = 0
-		else:
-			inc_dec = prev_inc_dec
+		circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
+		circles = select_circles(circles)
+		cur_obj = len(circles)
 
-
-		ratio = random.random() + 0.1
-
-		if(pos == 0):
-			n =  cur_sol[pos]
-			if(n < 1):
-				inc_dec = 1
-			elif(n > MAX_DP):
-				inc_dec = 0
-
-			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),1)
-			else:
-				cur_sol[pos] = int(n + n*ratio)
-		elif(pos == 1):
-			n =  cur_sol[pos]
-			if(n < LOWER_MIN_DIST):
-				inc_dec = 1
-			elif(n > UPPER_MIN_DIST):
-				inc_dec = 0
-
-			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_MIN_DIST-1)
-			else:
-				cur_sol[pos] = int(n + n*ratio)
-		elif(pos == 2):
-			n =  cur_sol[pos]
-			if(n < LOWER_P1):
-				inc_dec = 1
-			elif(n > UPPER_P1):
-				inc_dec = 0
-
-			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_P1-1)
-			else:
-				cur_sol[pos] = int(n + n*ratio)
-		elif(pos == 3):
-			n =  cur_sol[pos]
-			if(n < LOWER_P2):
-				inc_dec = 1
-			elif(n > UPPER_P2):
-				inc_dec = 0
-			
-			if(inc_dec == 0):
-				cur_sol[pos] = max(int(n - n*ratio),LOWER_P2-1)
-			else:
-				cur_sol[pos] = int(n + n*ratio)
-
-		dict_circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
-		dict_circles = select_circles(dict_circles)
-		cur_obj = len(dict_circles)
-		print("n_images: ", cur_obj)
-		print("dp: ",cur_sol[0]," minDist: ",cur_sol[1]," p1: ",cur_sol[2]," p2: ",cur_sol[3])
-
-		if(cur_obj > best_obj):
+		if(cur_obj >= best_obj):
+			improved = True
 			best_obj = cur_obj
-			best_sol = cur_sol
-			n_it_not_improved = 0
-			pos_not_improved = 0
-			inc_dec_not_improved = 0
-		else:
-			n_it_not_improved += 1
-			pos_not_improved += 1
-			inc_dec_not_improved += 1
-
-		prev_inc_dec = inc_dec
-		prev_pos = pos
+			best_sol = cur_sol.copy()
+		elif(improved == True):
+			break
+			
 
 
 	return best_sol
 
 
+def parameter_tunning(n_iter, sol, n_imgs):
+
+	cur_sol = sol.copy()
+	best_sol = sol.copy()
+	circles = generate_circles(sol[0],sol[1],sol[2],sol[3],n_imgs)
+	circles = select_circles(circles)
+	cur_obj = len(circles)
+	best_obj = cur_obj
+	pos = random.randint(0,3)
+	hist_pos = deque([pos])
+	n_it_not_improved = 0
+
+	for i in range(n_iter):
+		print("Iteration ", i)
+		inc_dec = random.randint(0,1)
+		ratio = random.randrange(1,6)/10
+		while(hist_pos.count(pos) > 0):
+			pos = random.randint(0,3)
+
+		hist_pos.append(pos)
+		if(len(hist_pos) > 0):
+			hist_pos.popleft()
+		
+		# Disturbance------------------------------------------------------------------
+		cur_sol = best_sol.copy()
+		n = cur_sol[pos]
+		if(inc_dec == 1):
+			cur_sol[pos] += int(n*ratio)
+		else:
+			if(pos == 0):
+				cur_sol[pos] =  max(int(n - (n*ratio)),1)
+			elif(pos == 1):
+				cur_sol[pos] =  max(int(n - (n*ratio)),LOWER_MIN_DIST-1)
+			elif(pos == 2):
+				cur_sol[pos] =  max(int(n - (n*ratio)),LOWER_P1-1)
+			elif(pos == 3):
+				cur_sol[pos] =  max(int(n - (n*ratio)),LOWER_P2-1)
+		#--------------------------------------------------------------------------------
+
+		# Local search
+		cur_sol = local_search(cur_sol,cur_obj,n_imgs)
+
+		circles = generate_circles(cur_sol[0],cur_sol[1],cur_sol[2],cur_sol[3],n_imgs)
+		circles = select_circles(circles)
+		cur_obj = len(circles)
+		print("n_images: ", cur_obj)
+		print(cur_sol)
+
+		# Acceptance
+		if(cur_obj > best_obj):
+			best_obj = cur_obj
+			best_sol = cur_sol.copy()
+			n_it_not_improved = 0
+		else:
+			n_it_not_improved += 1
+
+		if(n_it_not_improved >= THRESH_IT_NOT_IMPROV):
+			break
+
+	return best_sol
+
+
+
 print("Tunning parameters")
 time_before = time.clock()
-sol = parameter_tunning(70,[2,100,20,100],25)
+#sol = parameter_tunning(50,[2,100,20,100],12)
 time_after = time.clock()
 print("parameter tunning completed in: ",time_after - time_before)
-print("dp: ",sol[0]," minDist: ",sol[1]," p1: ",sol[2]," p2: ",sol[3])
+#print("dp: ",sol[0]," minDist: ",sol[1]," p1: ",sol[2]," p2: ",sol[3])
 print("Generating circles")
-circles_raw = generate_circles(sol[0],sol[1],sol[2],sol[3],100)
+#circles_raw = generate_circles(sol[0],sol[1],sol[2],sol[3],100)
+circles_raw = generate_circles(3,100,32,100,100)
 print("Selecting the best circle")
 circs = select_circles(circles_raw)
 indexes = sorted(list(circs.keys()))

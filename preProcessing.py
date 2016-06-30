@@ -12,7 +12,7 @@ from edgeDetectors import edge
 H_RATIO = 0.13
 # width shrinkage ratio
 W_RATIO = 0.1
-N_IMAGES = 242
+N_IMAGES = 204
 
 
 def auto_canny(image, sigma=0.33):
