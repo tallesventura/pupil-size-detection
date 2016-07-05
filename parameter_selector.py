@@ -1,15 +1,11 @@
-#!/usr/env python
-
 import cv2
 import numpy as np
-import os
 import math
 import random
-import time
-from matplotlib import pyplot as plt
 from collections import deque
+import circles_utils
 
-PENALTY_WHITE = 7
+PENALTY_WHITE = 5
 PENALTY_BLACK = 1
 MAX_IT = 100
 MAX_ITER_LS = 6
@@ -18,52 +14,11 @@ LOWER_P2 = 30
 LOWER_MIN_DIST = 100
 
 
-# circle: list with a circle's parameters (x,y,radius)
-def count_pixels(img, circle):
-  x = circle[1]
-  y = circle[0]
-  r = circle[2]
-  xs = x-r
-  xe = x+r+1
-  ys = y-r
-  ye = y+r+1
-
-  img_box = np.array(img[xs:xe,ys:ye])
-  h = img_box.shape[0]
-  w = img_box.shape[1]
-
-  black = 0
-  white = 0
-  for i in range(h):
-      for j in range(w):
-          if(img_box[i,j] == 0):
-              black+= 1
-          else:
-            white+= 1
-
-  percent_black = (100*black)/total_pixels
-  percent_white = (100*white)/total_pixels
-
-
-  return perecent_black, percent_white
-
-
-def select_circle(img,circles):
-  best_circle = circles[0]
-  best_percent_black = count_pixels(img,best_circle)
-  for c in circles:
-    black, white = count_pixels(img,c)
-    if(black > best_percent_black):
-      best_circle = c
-
-  return best_circle
-
-
 def calc_cost(black, white):  
-  return WEIGHT_BLACK*black + WEIGHT_WHITE*white
+  return PENALTY_BLACK*black + PENALTY_WHITE*white
 
 
-def local_search(sol,cost,min_rad,max_rad):
+def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 
   cur_sol = sol.copy()
   cur_cost = cost
@@ -89,9 +44,12 @@ def local_search(sol,cost,min_rad,max_rad):
     else:
       cur_sol[pos] = int(n + (n*ratio)/i)
 
-    circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
-    c = select_circles(circles)
-    p_black, p_white = count_pixels(img,c)
+    circles = cv2.HoughCircles(img_gray_scale, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
+    if(circles is None):
+    	continue
+    circles = np.int16(np.around(circles))
+    c = circles_utils.select_circle(img_bin,circles[0])
+    p_black, p_white = circles_utils.count_pixels(img_bin,c)
     cur_cost = calc_cost(p_black,p_white)
 
     if(cur_cost <= best_cost):
@@ -102,16 +60,18 @@ def local_search(sol,cost,min_rad,max_rad):
       break
       
 
-
   return best_sol
 
 
-def ils(img,min_rad,max_rad):
-  cur_sol = [2,100,20,100]
+def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
+  cur_sol = sol.copy()
   best_sol = cur_sol.copy()
-  circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, sol[0], sol[1], param1=sol[2], param2=sol[3], minRadius=min_rad, maxRadius=max_rad)
-  c = select_circle(img,circles)
-  p_black, p_white = count_pixels(img,c)
+  circles = cv2.HoughCircles(img_gray_scale, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
+  circles = np.int16(np.around(circles))
+
+  c = circles_utils.select_circle(img_bin,circles[0])
+  #print("selected circle: ",c)
+  p_black, p_white = circles_utils.count_pixels(img_bin,c)
   cur_cost = calc_cost(p_black,p_white)
   best_cost = cur_cost
   pos = random.randint(0,3)
@@ -145,18 +105,24 @@ def ils(img,min_rad,max_rad):
     #--------------------------------------------------------------------------------
 
     # Local search
-    cur_sol = local_search(cur_sol,cur_cost,min_rad,max_rad)
+    cur_sol = local_search(img_gray_scale,img_bin,cur_sol,cur_cost,min_rad,max_rad)
 
-    circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
-    c = select_circles(img,circles)
-    p_black, p_white = count_pixels(img,c)
+    circles = cv2.HoughCircles(img_gray_scale, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
+    if(circles is None):
+    	continue
+    circles = np.int16(np.around(circles))
+    c = circles_utils.select_circle(img_bin,circles[0])
+    #print("selected circle: ",c)
+    p_black, p_white = circles_utils.count_pixels(img_bin,c)
+    print(p_black)
     cur_cost = calc_cost(p_black,p_white)
 
     # Acceptance
-    if(cur_cost < best_cost):
+    if(cur_cost <= best_cost):
       best_cost = cur_cost
       best_sol = cur_sol.copy()
 
+  print("best sol: ",best_sol)
   return best_sol
 
 

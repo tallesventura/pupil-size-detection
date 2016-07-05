@@ -97,15 +97,6 @@ def count_pixels(img, circle):
     return black, white
 
 
-def select_circles(circs):
-	for c in circs:
-		r = c[2]
-		x = c[0]
-		y = c[1]
-		
-
-
-
 # circs: dictionary with the name of the images as keys and the circle parameters as values
 def select_circles(circs):
 
