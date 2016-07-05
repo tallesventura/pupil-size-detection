@@ -48,25 +48,6 @@ def get_radius_list(circles_dict):
 	return list_radius
 
 
-# Computes the distance between consecutive circles
-def calc_dist_circles(circles):
-
-    out = []
-    x1 = circles[0][0]
-    y1 = circles[0][1]
-
-    for i in range(1, len(circles)):
-        x = circles[i][0]
-        y = circles[i][1]
-        dx = x1 - x
-        dy = y1 - y
-        dist = int(math.sqrt(dx**2 + dy**2))
-        out.append(dist)
-        x1 = x
-        y1 = y
-
-    return np.array(out)
-
 # circles: 		dictionary with the name of the images as keys and the circle parameters as values
 # dest_folder:	path to the folder where the images will be saved
 def draw_circles(circles, dest_folder):
@@ -114,6 +95,15 @@ def count_pixels(img, circle):
             	white+= 1
 
     return black, white
+
+
+def select_circles(circs):
+	for c in circs:
+		r = c[2]
+		x = c[0]
+		y = c[1]
+		
+
 
 
 # circs: dictionary with the name of the images as keys and the circle parameters as values
