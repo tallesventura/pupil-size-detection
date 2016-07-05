@@ -50,7 +50,7 @@ def fill_object(image, center, threshold):
 def rough_pupil_point(img):
 
     VARIANCE = 55
-    img_inverted = cv2.bitwise_not(img)
+    img_inverted =  cv2.bitwise_not(img)
     row, col = img_inverted.shape
     gaussian_x = cv2.getGaussianKernel(row, VARIANCE)
     gaussian_y = cv2.getGaussianKernel(col, VARIANCE)
@@ -58,19 +58,6 @@ def rough_pupil_point(img):
     weighted_image = np.multiply(img_inverted, gaussian_weight)
     rough_point = np.unravel_index(weighted_image.argmax(), weighted_image.shape)
     return rough_point
-
-
-def resolution_normalization(image):
-    normalized = cv2.resize(image, (1344, 756), interpolation=cv2.INTER_LINEAR)
-    return normalized
-
-
-def nan_cleaning(float_list):
-    cleaned_data = []
-    for value in float_list:
-        if not math.isnan(value):
-            cleaned_data.append(value)
-    return cleaned_data
 
 
 if __name__ == '__main__':
