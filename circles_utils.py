@@ -33,72 +33,69 @@ def draw_circles(circles, src_path, dest_folder):
 
 # circle: list with a circle's parameters (x,y,radius)
 def count_pixels(img, circle):
-  x = circle[1]
-  y = circle[0]
-  r = circle[2]
-  xs = max(0,x-r)
-  xe = min(img.shape[0]-1,x+r+1)
-  ys = max(0,y-r)
-  ye = min(img.shape[1]-1,y+r+1)
-  #print(x,y,r)
-  #print("xs:",xs,"xe:",xe,"ys:",ys,"ye",ye)
+    x = circle[1]
+    y = circle[0]
+    r = circle[2]
+    xs = max(0,x-r)
+    xe = min(img.shape[0]-1,x+r+1)
+    ys = max(0,y-r)
+    ye = min(img.shape[1]-1,y+r+1)
 
-  img_box = np.array(img[xs:xe,ys:ye])
-  #print(img_box.shape)
-  h = img_box.shape[0]
-  w = img_box.shape[1]
-  total_pixels = h*w
+    img_box = np.array(img[xs:xe,ys:ye])
+    h = img_box.shape[0]
+    w = img_box.shape[1]
+    total_pixels = h*w
 
-  black = 0
-  white = 0
-  for i in range(h):
-      for j in range(w):
-          if(img_box[i,j] == 0):
-              black+= 1
-          else:
-            white+= 1
+    black = 0
+    white = 0
+    for i in range(h):
+        for j in range(w):
+            if(img_box[i,j] == 0):
+                black+= 1
+            else:
+                white+= 1
 
-  percent_black = (100*black)/total_pixels
-  percent_white = (100*white)/total_pixels
+    percent_black = (100*black)/total_pixels
+    percent_white = (100*white)/total_pixels
 
 
-  return percent_black, percent_white
+    return percent_black, percent_white
 
 
 # circles: list of circles
 def select_circle(img,circles):
-  best_circle = circles[0]
-  best_percent_black = 0.0
-  for c in circles:
-    black, white = count_pixels(img,c)
-    if(black > best_percent_black):
-      best_circle = c
+    best_circle = circles[0]
+    best_percent_black = 0.0
+    for c in circles:
+        black, white = count_pixels(img,c)
+        if(black > best_percent_black):
+            best_circle = c
 
-  return best_circle
+    return best_circle
 
 
 # list_areas: list with the areas of the circles
 # n_images:   number of images that will be used to calculate the baseline area
 def get_baseline_area(list_areas,n_images):
-	l = list_areas[:n_images]
-	return np.mean(l)
+    l = list_areas[:n_images]
+    return np.mean(l)
 
 
 # list_areas: list with the areas of the circles
 def get_percentage_area(list_areas, baseline_area):
 
-	out = []
-	for a in list_areas:
-		out.append((100*a)/baseline_area)
+    out = []
+    for a in list_areas:
+        out.append((100*a)/baseline_area)
 
-	return out
+    return out
 
 
 # list_radius: list with the radius of the circles
 def get_areas(list_radius):
-	out = []
-	for r in list_radius:
-		out.append(3.14 * (r**2))
+    out = []
+    for r in list_radius:
+        out.append(3.14 * (r**2))
 
-	return out
+    return out
 
