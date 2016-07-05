@@ -5,19 +5,33 @@ import random
 from collections import deque
 import circles_utils
 
+# Penalty for the percentage of white pixels on the goal function
 PENALTY_WHITE = 5
+# Penalty for the percentage of black pixels on the goal function
 PENALTY_BLACK = 1
+# Number of iterations for the iterated local search (ils)
 MAX_IT = 100
+# Number of iterations for the local search
 MAX_ITER_LS = 6
+# Minimum value for the param1 of the cv2.HoughCircles function
 LOWER_P1 = 8
+# Minimum value for the param2 of the cv2.HoughCircles function
 LOWER_P2 = 30
+# Minimum value for the minimum distance between the centers of circles in the cv2.HoughCircles function
 LOWER_MIN_DIST = 100
 
 
-def calc_cost(black, white):  
+# black: percentage of black pixels
+# white: percentage of white pixels
+def calc_cost(black, white):
   return PENALTY_BLACK*black + PENALTY_WHITE*white
 
 
+# img_bin: image with a threshold applied
+# sol: initial solution
+# cost: initial cost
+# min_rad: minimum radius
+# max_rad: maximum radius
 def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 
   cur_sol = sol.copy()
@@ -63,6 +77,10 @@ def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
   return best_sol
 
 
+# img_bin: image with a threshold applied
+# sol: initial solution
+# min_rad: minimum radius
+# max_rad: maximum radius
 def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
   cur_sol = sol.copy()
   best_sol = cur_sol.copy()
@@ -70,7 +88,6 @@ def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
   circles = np.int16(np.around(circles))
 
   c = circles_utils.select_circle(img_bin,circles[0])
-  #print("selected circle: ",c)
   p_black, p_white = circles_utils.count_pixels(img_bin,c)
   cur_cost = calc_cost(p_black,p_white)
   best_cost = cur_cost
@@ -112,7 +129,6 @@ def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
     	continue
     circles = np.int16(np.around(circles))
     c = circles_utils.select_circle(img_bin,circles[0])
-    #print("selected circle: ",c)
     p_black, p_white = circles_utils.count_pixels(img_bin,c)
     print(p_black)
     cur_cost = calc_cost(p_black,p_white)
