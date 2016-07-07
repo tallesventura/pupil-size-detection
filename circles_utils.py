@@ -19,17 +19,53 @@ def get_radius_list(circles_dict):
 # dest_folder:	path to the folder where the images will be saved
 def draw_circles(circles, src_path, dest_folder):
 	keys = list(circles.keys())
+	print(keys)
 	for k in keys:
 		img_circles = circles.get(k)
+		#print(img_circles)
 		src_path = src_path + '/' + str(k) + ".jpg"
-		dest_path = dest_folder+'/'+str(k) + ".jpg"
+		dest_path = dest_folder +'/'+ str(k) + ".jpg"
 		img = cv2.imread(src_path)
-
-		c = (img_circles[0],img_circles[1])
-		r = img_circles[2]
-		cv2.circle(img, c, r, (0, 255, 0), 2)
+		print(src_path)
+		print(dest_path)
+		if(type(img_circles) is list):
+			for j in range(len(img_circles)):
+				c = (img_circles[j][0],img_circles[j][1])
+				r = img_circles[j][2]
+				cv2.circle(img, c, r, (0, 255, 0), 2)
+		else:
+			c = (img_circles[0],img_circles[1])
+			r = img_circles[2]
+			cv2.circle(img, c, r, (0, 255, 0), 2)
 
 		cv2.imwrite(dest_path, img)
+
+
+
+def generate_circles(sol, src_path, image_names, min_rad, max_rad):
+	# Reading the images and finding the circles	
+	dict_circles = {}
+	for name in image_names:
+		img_path = src_path + "/" + str(name) + ".jpg"
+		img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
+
+		#dp: This parameter is the inverse ratio of the accumulator resolution to the image resolution (see Yuen et al. for more details). Essentially, the larger the dp gets, the smaller the accumulator array gets.
+		#minDist: Minimum distance between the center (x, y) coordinates of detected circles. If the minDist is too small, multiple circles in the same neighborhood as the original may be (falsely) detected. If the minDist is too large, then some circles may not be detected at all.
+		#param1: Gradient value used to handle edge detection in the Yuen et al. method.
+		#param2: Accumulator threshold value for the cv2.HOUGH_GRADIENT method. The smaller the threshold is, the more circles will be detected (including false circles). The larger the threshold is, the more circles will potentially be returned.
+		#minRadius: Minimum size of the radius (in pixels).
+		#maxRadius: Maximum size of the radius (in pixels).
+		circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, sol[0], sol[1], param1=sol[2], param2=sol[3], minRadius=min_rad, maxRadius=max_rad)
+		
+		cur_img_circles = []
+		if circles is not None:
+			
+			circles = np.int16(np.around(circles))
+			for c in circles[0,:]:
+				cur_img_circles.append(c)
+			dict_circles[name] = cur_img_circles
+
+	return dict_circles
 
 
 # circle: list with a circle's parameters (x,y,radius)
@@ -63,7 +99,9 @@ def count_pixels(img, circle):
     return percent_black, percent_white
 
 
-# circles: list of circles
+#---Selects the best circle in the given image
+#	img: 		a binarized image
+#	circles: 	list of circles
 def select_circle(img, circles):
     best_circle = circles[0]
     best_percent_black = 0.0
@@ -73,6 +111,19 @@ def select_circle(img, circles):
             best_circle = c
 
     return best_circle
+
+
+
+def select_circles(dict_circles, src_path):
+	out = {}
+	keys = list(dict_circles.keys())
+
+	for k in keys:
+		img = cv2.imread(src_path + "/" + str(k) + ".jpg",cv2.IMREAD_GRAYSCALE)
+		circles = dict_circles.get(k)
+		out[k] = select_circle(img,circles)
+
+	return out
 
 
 # list_areas: list with the areas of the circles
