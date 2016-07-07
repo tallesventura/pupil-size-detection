@@ -27,19 +27,19 @@ def fill_object(image, center, threshold):
     img2, contours, hierarchy = cv2.findContours(bw_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if contours and len(contours[0]) > 5:
         cnt = contours[0]
-        # (x, y), radius = cv2.minEnclosingCircle(cnt)
-        # center = (int(x), int(y))
-        # radius = int(radius)
-        # cv2.circle(image, center, radius, 255, 2)
-        # area = math.pi*radius**2
-        ellipse = cv2.fitEllipse(cnt)
-        minor_axis, major_axis = ellipse[1]
-        eccentricity = math.sqrt((1 - (minor_axis**2/major_axis**2)))
-        if eccentricity <= 0.8:
-            cv2.ellipse(image, ellipse, 255, 2)
-            #area = math.pi*major_axis*minor_axis
-        else:
-            area = 0
+        (x, y), radius = cv2.minEnclosingCircle(cnt)
+        center = (int(x), int(y))
+        radius = int(radius)
+        cv2.circle(image, center, radius, 255, 2)
+        area = math.pi*radius**2
+        # ellipse = cv2.fitEllipse(cnt)
+        # minor_axis, major_axis = ellipse[1]
+        # eccentricity = math.sqrt((1 - (minor_axis**2/major_axis**2)))
+        # if eccentricity <= 0.8:
+        #     cv2.ellipse(image, ellipse, 255, 2)
+        #     #area = math.pi*major_axis*minor_axis
+        # else:
+        #     area = 0
     # cv2.imshow("r", img2)
     # cv2.waitKey(0)
     # print(maxi, mini)

@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import cv2
 
 # circles_dict: dictionary where the keys are the name of the image and the values
@@ -13,7 +13,8 @@ def get_radius_list(circles_dict):
 	return list_radius
 
 
-# circles: 		  dictionary with the name of the images as keys and the circle parameters as values
+# circles: 		dictionary with the name of the images as keys and the circle
+#                   parameters as values
 # src_path:     path to the folder where the images original images are
 # dest_folder:	path to the folder where the images will be saved
 def draw_circles(circles, src_path, dest_folder):
@@ -63,7 +64,7 @@ def count_pixels(img, circle):
 
 
 # circles: list of circles
-def select_circle(img,circles):
+def select_circle(img, circles):
     best_circle = circles[0]
     best_percent_black = 0.0
     for c in circles:
@@ -76,7 +77,7 @@ def select_circle(img,circles):
 
 # list_areas: list with the areas of the circles
 # n_images:   number of images that will be used to calculate the baseline area
-def get_baseline_area(list_areas,n_images):
+def get_baseline_area(list_areas, n_images):
     l = list_areas[:n_images]
     return np.mean(l)
 
@@ -98,4 +99,3 @@ def get_areas(list_radius):
         out.append(3.14 * (r**2))
 
     return out
-
