@@ -39,7 +39,7 @@ def erosion(image):
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
     opening = cv2.morphologyEx(image, cv2.MORPH_DILATE, kernel)
-    
+
     return opening
 
 
@@ -70,7 +70,7 @@ def cut_eye_pos(in_img):
 def run(image_names, src_path, gray_path, binarized_path):
 
     for name in image_names:
-        orig_img = cv2.imread(src_path + "/" + name + ".jpg")
+        orig_img = cv2.imread(src_path + "/" + str(name) + ".jpg")
         eye = cut_eye_pos(orig_img)
         resultEqualization = createClare(eye)
         img_gray = cv2.cvtColor(resultEqualization, cv2.COLOR_BGR2GRAY)
@@ -80,7 +80,7 @@ def run(image_names, src_path, gray_path, binarized_path):
         for i in range(4):
             bin_img = erosion(bin_img)
 
-        cv2.imwrite(gray_path + "/" + name + ".jpg", blured_img)
-        cv2.imwrite(binarized_path + "/" + name + ".jpg", bin_img)
+        cv2.imwrite(gray_path + "/" + str(name) + ".jpg", blured_img)
+        cv2.imwrite(binarized_path + "/" + str(name) + ".jpg", bin_img)
 
  
