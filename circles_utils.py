@@ -19,15 +19,15 @@ def get_radius_list(circles_dict):
 # dest_folder:	path to the folder where the images will be saved
 def draw_circles(circles, src_path, dest_folder):
 	keys = list(circles.keys())
-	print(keys)
+	#print(keys)
 	for k in keys:
 		img_circles = circles.get(k)
 		#print(img_circles)
-		src_path = src_path + '/' + str(k) + ".jpg"
-		dest_path = dest_folder +'/'+ str(k) + ".jpg"
-		img = cv2.imread(src_path)
-		print(src_path)
-		print(dest_path)
+		img_path = src_path + '/' + str(k) + ".jpg"
+		#dest_path = dest_folder +'/'+ str(k) + ".jpg"
+		img = cv2.imread(img_path)
+		#print(src_path)
+		#print(dest_path)
 		if(type(img_circles) is list):
 			for j in range(len(img_circles)):
 				c = (img_circles[j][0],img_circles[j][1])
@@ -38,7 +38,7 @@ def draw_circles(circles, src_path, dest_folder):
 			r = img_circles[2]
 			cv2.circle(img, c, r, (0, 255, 0), 2)
 
-		cv2.imwrite(dest_path, img)
+		cv2.imwrite(dest_folder +'/'+ str(k) + ".jpg", img)
 
 
 
