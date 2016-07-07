@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="Prefix">
+    <file>Eye Scapes - 01b.png</file>
+    <file>eye-icon.png</file>
+    <file>resource_file.qrc</file>
+  </qresource>
+</RCC>
