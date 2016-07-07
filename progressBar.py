@@ -25,9 +25,9 @@ except AttributeError:
 class Ui_loadingUi(object):
     def setupUi(self, loadingUi):
         loadingUi.setObjectName(_fromUtf8("loadingUi"))
-        loadingUi.resize(273, 102)
+        loadingUi.resize(303, 107)
         self.formLayoutWidget = QtGui.QWidget(loadingUi)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(0, 10, 271, 91))
+        self.formLayoutWidget.setGeometry(QtCore.QRect(0, 10, 301, 51))
         self.formLayoutWidget.setObjectName(_fromUtf8("formLayoutWidget"))
         self.formLayout = QtGui.QFormLayout(self.formLayoutWidget)
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
@@ -39,17 +39,20 @@ class Ui_loadingUi(object):
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.progressBar)
-        self.label_3 = QtGui.QLabel(self.formLayoutWidget)
-        self.label_3.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.label_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.formLayout.setWidget(3, QtGui.QFormLayout.FieldRole, self.label_3)
+        self.verticalLayoutWidget = QtGui.QWidget(loadingUi)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(170, 70, 131, 31))
+        self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
+        self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.cancel_button = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
+        self.verticalLayout.addWidget(self.cancel_button)
 
         self.retranslateUi(loadingUi)
         QtCore.QMetaObject.connectSlotsByName(loadingUi)
 
     def retranslateUi(self, loadingUi):
         loadingUi.setWindowTitle(_translate("loadingUi", "Form", None))
-        self.process_label.setText(_translate("loadingUi", "Processing video", None))
-        self.label_3.setText(_translate("loadingUi", "Loading...   ", None))
+        self.process_label.setText(_translate("loadingUi", "Processing video...", None))
+        self.cancel_button.setText(_translate("loadingUi", "Cancel", None))
 

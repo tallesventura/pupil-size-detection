@@ -35,6 +35,7 @@ class Ui_PDMainWindow(object):
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(190, 10, 441, 551))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.eye_label = QtGui.QLabel(self.verticalLayoutWidget)
         self.eye_label.setText(_fromUtf8(""))

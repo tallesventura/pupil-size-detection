@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>273</width>
-    <height>102</height>
+    <width>303</width>
+    <height>107</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>271</width>
-     <height>91</height>
+     <width>301</width>
+     <height>51</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
@@ -29,7 +29,7 @@
     <item row="0" column="1">
      <widget class="QLabel" name="process_label">
       <property name="text">
-       <string>Processing video</string>
+       <string>Processing video...</string>
       </property>
      </widget>
     </item>
@@ -40,16 +40,22 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QLabel" name="label_3">
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>70</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="cancel_button">
       <property name="text">
-       <string>Loading...   </string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <string>Cancel</string>
       </property>
      </widget>
     </item>
