@@ -26,7 +26,8 @@ def draw_circles(circles, src_path, dest_folder):
 		src_path = src_path + '/' + str(k) + ".jpg"
 		dest_path = dest_folder +'/'+ str(k) + ".jpg"
 		img = cv2.imread(src_path)
-
+		print(src_path)
+		print(dest_path)
 		if(type(img_circles) is list):
 			for j in range(len(img_circles)):
 				c = (img_circles[j][0],img_circles[j][1])

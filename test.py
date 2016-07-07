@@ -16,7 +16,7 @@ path_bin = "/Users/talles/Documents/Summer project/pupil size detection/pupil-si
 path_dest = "/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/circleDetections"
 #preProcessing.run(np.arange(1,11),orig_path,path_gray,path_bin)
 time_before = time.clock()
-sol = parameter_selector.ils(img_gray,img_bin,[1, 213, 37, 29],27,80)
+#sol = parameter_selector.ils(img_gray,img_bin,[1, 213, 37, 29],27,80)
 time_after = time.clock()
 print("parameter tunning completed in: ",time_after - time_before)
 print(sol)

@@ -310,18 +310,19 @@ print("parameter tunning completed in: ",time_after - time_before)
 #print("dp: ",sol[0]," minDist: ",sol[1]," p1: ",sol[2]," p2: ",sol[3])
 print("Generating circles")
 #circles_raw = generate_circles(sol[0],sol[1],sol[2],sol[3],100)
-circles_raw = generate_circles(3,100,32,100,100)
+circles_raw = generate_circles(1, 213, 37, 29,10)
 print("Selecting the best circle")
 circs = select_circles(circles_raw)
 indexes = sorted(list(circs.keys()))
 print("n_images: ", len(indexes))
 list_radius = get_radius_list(circs)
 list_areas = get_areas(list_radius)
-baseline_area = get_baseline_area(list_areas)
-print("baseline area: ", baseline_area)
-percentage_areas = get_percentage_area(list_areas, baseline_area)
+draw_circles(circs,dirname)
+#baseline_area = get_baseline_area(list_areas)
+#print("baseline area: ", baseline_area)
+#percentage_areas = get_percentage_area(list_areas, baseline_area)
 
-
+"""
 if(ENABLE_POST_PROC):
     print("post-processing the circles")
     circles_processed, radius_processed = post_process_circles(circs)
@@ -341,3 +342,4 @@ plt.ylabel('% \of Baseline Area')
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1,
            ncol=2, borderaxespad=0.)
 plt.show()
+"""
