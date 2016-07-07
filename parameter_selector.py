@@ -10,7 +10,7 @@ PENALTY_WHITE = 5
 # Penalty for the percentage of black pixels on the goal function
 PENALTY_BLACK = 1
 # Number of iterations for the iterated local search (ils)
-MAX_IT = 100
+MAX_IT = 50
 # Number of iterations for the local search
 MAX_ITER_LS = 6
 # Minimum value for the param1 of the cv2.HoughCircles function
@@ -55,12 +55,12 @@ def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 				cur_sol[pos] =  max(int(n - (n*ratio)/i),LOWER_P1-1)
 			elif(pos == 3):
 				cur_sol[pos] =  max(int(n - (n*ratio)/i),LOWER_P2-1)
-	    else:
-	    	cur_sol[pos] = int(n + (n*ratio)/i)
+		else:
+			cur_sol[pos] = int(n + (n*ratio)/i)
 
 		circles = cv2.HoughCircles(img_gray_scale, cv2.HOUGH_GRADIENT, cur_sol[0], cur_sol[1], param1=cur_sol[2], param2=cur_sol[3], minRadius=min_rad, maxRadius=max_rad)
 		if(circles is None):
-	    	continue
+			continue
 		circles = np.int16(np.around(circles))
 		c = circles_utils.select_circle(img_bin,circles[0])
 		p_black, p_white = circles_utils.count_pixels(img_bin,c)
