@@ -132,11 +132,9 @@ def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
 		cur_cost = calc_cost(p_black,p_white)
 
 		# Acceptance
-		if(cur_cost <= best_cost):
+		if(cur_cost < best_cost):
 			best_cost = cur_cost
 			best_sol = cur_sol.copy()
 
 	return best_sol
-
-
 

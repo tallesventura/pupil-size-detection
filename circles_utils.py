@@ -103,18 +103,34 @@ def count_pixels(img, circle):
 #	img: 		a binarized image
 #	circles: 	list of circles
 def select_circle(img, circles):
-    best_circle = circles[0]
-    best_percent_black = 0.0
-    for c in circles:
-        black, white = count_pixels(img,c)
-        if(black > best_percent_black):
-            best_circle = c
+	'''
+	best_circle = circles[0]
+	best_percent_black = 0.0
+	for c in circles:
+		black, white = count_pixels(img,c)
+		if(black > best_percent_black):
+			best_circle = c
 
-    return best_circle
+	'''
+
+	blackP_list = []
+	whiteP_list = []
+	for j in range(len(circles)):
+	    black, white = count_pixels(img,circles[j])
+	    blackP_list.append(black)
+	    whiteP_list.append(white)
+
+	blackP_list = np.array(blackP_list)
+	index_max = blackP_list.argmax()
+	b = blackP_list[index_max]
+	w = whiteP_list[index_max]
+	
+	best_circle = circles[index_max]
+	
+	return best_circle
 
 
-
-def select_circles(dict_circles, src_path):
+def select_circles(threshold,dict_circles, src_path):
 	out = {}
 	keys = list(dict_circles.keys())
 

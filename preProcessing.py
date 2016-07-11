@@ -77,7 +77,7 @@ def run(image_names, src_path, gray_path, binarized_path):
         blured_img = cv2.GaussianBlur(img_gray, (5, 5), 10)
         ret, bin_img = cv2.threshold(blured_img, 39, 255, cv2.THRESH_BINARY)
 
-        for i in range(4):
+        for i in range(6):
             bin_img = erosion(bin_img)
 
         cv2.imwrite(gray_path + "/" + str(name) + ".jpg", blured_img)
