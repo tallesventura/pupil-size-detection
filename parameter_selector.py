@@ -16,7 +16,7 @@ MAX_ITER_LS = 6
 # Minimum value for the param1 of the cv2.HoughCircles function
 LOWER_P1 = 8
 # Minimum value for the param2 of the cv2.HoughCircles function
-LOWER_P2 = 30
+LOWER_P2 = 10
 # Minimum value for the minimum distance between the centers of circles in the cv2.HoughCircles function
 LOWER_MIN_DIST = 100
 
