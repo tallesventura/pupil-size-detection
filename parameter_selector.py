@@ -16,22 +16,30 @@ MAX_ITER_LS = 6
 # Minimum value for the param1 of the cv2.HoughCircles function
 LOWER_P1 = 8
 # Minimum value for the param2 of the cv2.HoughCircles function
-LOWER_P2 = 30
+LOWER_P2 = 10
 # Minimum value for the minimum distance between the centers of circles in the cv2.HoughCircles function
 LOWER_MIN_DIST = 100
 
 
+# ===Description: ----------------------------------------------------------------------------------
+# calculates the cost of the objective function
+# ---Arguments: ------------------------------------------------------------------------------------
 # black: percentage of black pixels
 # white: percentage of white pixels
+# --------------------------------------------------------------------------------------------------
 def calc_cost(black, white):
 	return PENALTY_BLACK*black + PENALTY_WHITE*white
 
 
-# img_bin: image with a threshold applied
-# sol: initial solution
-# cost: initial cost
-# min_rad: minimum radius
-# max_rad: maximum radius
+# ===Description: ----------------------------------------------------------------------------------
+# applies a local search on the neighborhood of the given solution
+# ---Arguments: ------------------------------------------------------------------------------------
+# img_bin: 	image with a threshold applied
+# sol: 		initial solution
+# cost: 	initial cost
+# min_rad: 	minimum radius
+# max_rad: 	maximum radius
+# --------------------------------------------------------------------------------------------------
 def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 
 	cur_sol = sol.copy()
@@ -66,6 +74,7 @@ def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 		p_black, p_white = circles_utils.count_pixels(img_bin,c)
 		cur_cost = calc_cost(p_black,p_white)
 
+		# Acceptance criteria
 		if(cur_cost <= best_cost):
 			improved = True
 			best_cost = cur_cost
@@ -76,10 +85,14 @@ def local_search(img_gray_scale,img_bin,sol,cost,min_rad,max_rad):
 	return best_sol
 
 
-# img_bin: image with a threshold applied
-# sol: initial solution
-# min_rad: minimum radius
-# max_rad: maximum radius
+# ===Description: ----------------------------------------------------------------------------------
+# Implementation of the Iterated Local Search Meta-Heuristic
+# ---Arguments: ------------------------------------------------------------------------------------
+# img_bin: 	image with a threshold applied
+# sol: 		initial solution
+# min_rad: 	minimum radius
+# max_rad: 	maximum radius
+# --------------------------------------------------------------------------------------------------
 def ils(img_gray_scale,img_bin,sol,min_rad,max_rad):
 	cur_sol = sol.copy()
 	best_sol = cur_sol.copy()
