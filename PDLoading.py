@@ -8,6 +8,8 @@ class PDLoading (QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_loadingUi()
         self.ui.setupUi(self)
+        self.value = 1
+        self.ui.progressBar.setValue(self.value)
         self.ui.progressBar.setMinimum(1)
         self.ui.progressBar.setMaximum(100)
         self.ui.cancel_button.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -28,8 +30,8 @@ class PDLoading (QtGui.QWidget):
     def video_processing(self):
         while True:
             time.sleep(0.05)
-            value = self.ui.progressBar.value() + 1
-            self.ui.progressBar.setValue(value)
+            self.value = self.ui.progressBar.value() + 1
+            self.ui.progressBar.setValue(self.value)
 
 
 
