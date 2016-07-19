@@ -28,7 +28,7 @@ After you have installed Anaconda, you need to install the OpenCV3 package into 
 2 - Type ```conda install -c menpo opencv3=3.1.0``` and press Enter
 
 #Wiki
-The wiki page can be accessed here: <https://github.com/tallesventura/pupil-size-detection/wiki>
+The wiki page can be accessed [here](https://github.com/tallesventura/pupil-size-detection/wiki)
 
 #Contributors
 ##Developers
@@ -37,5 +37,6 @@ Marcos Motta - <https://github.com/marcosfmmota>
 Arnaldo Sales - <https://github.com/arnaldosales>  
 ##Other
 Dr. Mark Albert, from Loyola University Chicago  
-Dr. Bruce Gaynes  
+Dr. Bruce Gaynes, from Loyola University Chicago
+Adnaan Zaffer
 
