@@ -2,7 +2,7 @@
 
 #Desciption
 This project aims to automate part of the process of pupil detection and pupil area measurement that is used for detecting some diseases such as alzheimer and the use of cocaine.
-For each patient, the input is 4 videos with diferent combinations of light intensity and frequency each. For each video 1 frame is captured and saved every x given seconds. The baseline area is calculated using the first x samples of the corresponding video. For each image, the percentage of baseline area is calculated using the found baseline area. The output is a graph of percentage of baseline area vs time containing all the four light exposures (see below).
+For each patient, the input is 4 videos with diferent combinations of light intensity and frequency each. For each video 1 frame is captured and saved every x given seconds. The baseline area is calculated using the first x samples of the corresponding video. For each image, the percentage of baseline area is calculated using the found baseline area. The output is a graph of percentage of baseline area vs time containing all the four light exposures ([see here](http://imgur.com/MgOZ2qr)).
 
 
 The different steps of the process were done using a set of different tools. Some of then were very time consuming and required a lot of human assistance. This project aims to centralize the steps in one app and automate most of the steps in order to decrease the time needed to complete the process.
