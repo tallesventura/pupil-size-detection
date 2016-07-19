@@ -22,6 +22,9 @@ After you have installed Anaconda, you need to install the OpenCV3 package into 
 
 
 ##Mac
-1 - Open a command prompt window, you can do that by pressing 'command + space' and then searching for 'terminal'. Select the 'terminal' application.
+1 - Open a command line terminal window, you can do that by pressing 'command + space' and then searching for 'terminal'. Select the 'terminal' application.
 
 2 - Type ```conda install -c menpo opencv3=3.1.0``` and press Enter
+
+#Wiki
+The wiki page can be accessed here: <https://github.com/tallesventura/pupil-size-detection/wiki>
