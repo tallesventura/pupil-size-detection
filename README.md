@@ -36,7 +36,7 @@ Talles Alves - <https://github.com/tallesventura>
 Marcos Motta - <https://github.com/marcosfmmota>  
 Arnaldo Sales - <https://github.com/arnaldosales>  
 ##Other
-Dr. Mark Albert, from Loyola University Chicago  
-Dr. Bruce Gaynes, from Loyola University Chicago
+Dr. Mark Albert, from Loyola University Chicago, Department of Computer Science 
+Dr. Bruce Gaynes, from Loyola University Chicago  
 Adnaan Zaffer
 
