@@ -12,8 +12,7 @@ In order to the application to run, your computer has to have the following pack
 * Anaconda Python 3.5 distribution
 * OpenCV3 Python library
 
-The Anaconda Python 3.5 distribution can be downloaded at: <https://www.continuum.io/downloads>.  
-Download according to your Operating System. 
+The Anaconda Python 3.5 distribution can be downloaded [here](https://www.continuum.io/downloads). Choose the version according to your Operating System.  
 After you have installed Anaconda, you need to install the OpenCV3 package into your Anaconda environment. It has to be installed via command line. You can follow the steps bellow according to the operating system you are using.
 
 ##Windows
