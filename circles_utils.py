@@ -1,8 +1,13 @@
 import numpy as np
 import cv2
 
+
+# ===Description: ----------------------------------------------------------------------------------
+# gets the radius of the found circle for each image
+# ---Arguments: ------------------------------------------------------------------------------------
 # circles_dict: dictionary where the keys are the name of the image and the values
-#     are the parameters of the circle found on that image
+# are the parameters of the circle found on that image
+# --------------------------------------------------------------------------------------------------
 def get_radius_list(circles_dict):
 	keys = sorted(list(circles_dict.keys()))
 	list_radius = []
@@ -13,10 +18,14 @@ def get_radius_list(circles_dict):
 	return list_radius
 
 
+# ===Description: ----------------------------------------------------------------------------------
+# draws the given circles on the images
+# ---Arguments: ------------------------------------------------------------------------------------
 # circles: 		dictionary with the name of the images as keys and the circle
-#                   parameters as values
+# parameters as values
 # src_path:     path to the folder where the images original images are
 # dest_folder:	path to the folder where the images will be saved
+# --------------------------------------------------------------------------------------------------
 def draw_circles(circles, src_path, dest_folder):
 	keys = list(circles.keys())
 	#print(keys)
@@ -41,7 +50,15 @@ def draw_circles(circles, src_path, dest_folder):
 		cv2.imwrite(dest_folder +'/'+ str(k) + ".jpg", img)
 
 
-
+# ===Description: ----------------------------------------------------------------------------------
+# Generates circles for each image using the given parameter for the HoughCircles algorithm
+# ---Arguments: ------------------------------------------------------------------------------------
+# sol:	list with the dp, minDist, param1 and param2 for the HoughCircles algorithm
+# src_path:		path to the folder where the images are saved
+# image_names: 	list with the names of the images
+# min_rad: 		minimum circle radius for the HoughCircles algorithm
+# max_rad: 		maximum circle radius for the HoughCircles algorithm
+# --------------------------------------------------------------------------------------------------
 def generate_circles(sol, src_path, image_names, min_rad, max_rad):
 	# Reading the images and finding the circles	
 	dict_circles = {}
@@ -68,7 +85,12 @@ def generate_circles(sol, src_path, image_names, min_rad, max_rad):
 	return dict_circles
 
 
-# circle: list with a circle's parameters (x,y,radius)
+# ===Description: ----------------------------------------------------------------------------------
+# Counting the percentage of black pixels and white pixels inside the given circle
+# ---Arguments: ------------------------------------------------------------------------------------
+# circle: 	list with a circle's parameters (x,y,radius)
+# img:		2-dimensional matrix (image)
+# --------------------------------------------------------------------------------------------------
 def count_pixels(img, circle):
     x = circle[1]
     y = circle[0]
@@ -99,22 +121,49 @@ def count_pixels(img, circle):
     return percent_black, percent_white
 
 
-#---Selects the best circle in the given image
-#	img: 		a binarized image
-#	circles: 	list of circles
+# ===Description: ----------------------------------------------------------------------------------
+# Selects the best circle in the given image
+# ---Arguments: ------------------------------------------------------------------------------------
+# img: 		a binarized image
+# circles: 	list of circles
+# --------------------------------------------------------------------------------------------------
 def select_circle(img, circles):
-    best_circle = circles[0]
-    best_percent_black = 0.0
-    for c in circles:
-        black, white = count_pixels(img,c)
-        if(black > best_percent_black):
-            best_circle = c
+	'''
+	best_circle = circles[0]
+	best_percent_black = 0.0
+	for c in circles:
+		black, white = count_pixels(img,c)
+		if(black > best_percent_black):
+			best_circle = c
 
-    return best_circle
+	'''
+
+	blackP_list = []
+	whiteP_list = []
+	for j in range(len(circles)):
+	    black, white = count_pixels(img,circles[j])
+	    blackP_list.append(black)
+	    whiteP_list.append(white)
+
+	blackP_list = np.array(blackP_list)
+	index_max = blackP_list.argmax()
+	b = blackP_list[index_max]
+	w = whiteP_list[index_max]
+	
+	best_circle = circles[index_max]
+	
+	return best_circle
 
 
-
-def select_circles(dict_circles, src_path):
+# ===Description: ----------------------------------------------------------------------------------
+# Selects the best circles in each image
+# ---Arguments: ------------------------------------------------------------------------------------
+# threshold: 		a binarized image
+# dict_circles: 	dictionary where the keys are the image names and the values are a list of 
+# of circles
+# src_path:			path to the folder where the images are saved
+# --------------------------------------------------------------------------------------------------
+def select_circles(threshold,dict_circles, src_path):
 	out = {}
 	keys = list(dict_circles.keys())
 
@@ -125,15 +174,24 @@ def select_circles(dict_circles, src_path):
 
 	return out
 
-
+# ===Description: ----------------------------------------------------------------------------------
+# calculates the baseline area
+# ---Arguments: ------------------------------------------------------------------------------------
 # list_areas: list with the areas of the circles
 # n_images:   number of images that will be used to calculate the baseline area
+# --------------------------------------------------------------------------------------------------
 def get_baseline_area(list_areas, n_images):
     l = list_areas[:n_images]
     return np.mean(l)
 
 
-# list_areas: list with the areas of the circles
+
+# ===Description: ----------------------------------------------------------------------------------
+# calculates the percentage of pupil area for each image
+# ---Arguments: ------------------------------------------------------------------------------------
+# list_areas: 		list with the areas of the circles
+# baseline_area: 	the baseline area
+# --------------------------------------------------------------------------------------------------
 def get_percentage_area(list_areas, baseline_area):
 
     out = []
@@ -143,7 +201,12 @@ def get_percentage_area(list_areas, baseline_area):
     return out
 
 
+
+# ===Description: ----------------------------------------------------------------------------------
+# calculates the pupil area for each image
+# ---Arguments: ------------------------------------------------------------------------------------
 # list_radius: list with the radius of the circles
+# --------------------------------------------------------------------------------------------------
 def get_areas(list_radius):
     out = []
     for r in list_radius:
