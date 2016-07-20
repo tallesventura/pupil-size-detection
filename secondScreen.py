@@ -72,3 +72,6 @@ class Ui_Widget(object):
         self.pushButton_3.setText(_translate("Widget", "Run detection", None))
         self.pushButton_4.setText(_translate("Widget", "Save", None))
 
+
+        #so um teste
+
