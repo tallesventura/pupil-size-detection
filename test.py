@@ -20,10 +20,10 @@ path_bin = "/Users/talles/Documents/Summer project/pupil size detection/pupil-si
 path_dest = "/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/circleDetections"
 
 
-videoProcessor.run_sampling("/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/source_images/videoCapTest","/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/source_images/v2.mp4",1.0)
+#videoProcessor.run_sampling("/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/source_images/videoCapTest","/Users/talles/Documents/Summer project/pupil size detection/pupil-size-detection/source_images/v2.mp4",1.0)
 #print("finished sampling the video")
 
-preProcessing.run(np.arange(1,107),orig_path,path_gray,path_bin)
+preProcessing.run(np.arange(1,102),orig_path,path_gray,path_bin)
 
 time_before = time.clock()
 sol = parameter_selector.ils(img_gray,img_bin,[1, 213, 30, 10],27,70)
