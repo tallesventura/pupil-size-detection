@@ -86,7 +86,7 @@ def generate_circles(sol, src_path, image_names, min_rad, max_rad):
 
 
 # ===Description: ----------------------------------------------------------------------------------
-# Counting the percentage of black pixels and white pixels inside the given circle
+# Counts the percentage of black pixels and white pixels inside the given circle
 # ---Arguments: ------------------------------------------------------------------------------------
 # circle: 	list with a circle's parameters (x,y,radius)
 # img:		2-dimensional matrix (image)
@@ -159,7 +159,7 @@ def select_circle(img, circles):
 # Selects the best circles in each image
 # ---Arguments: ------------------------------------------------------------------------------------
 # threshold: 		a binarized image
-# dict_circles: 	dictionary where the keys are the image names and the values are a list of 
+# dict_circles: 	dictionary where the keys are the image names and the values are a list
 # of circles
 # src_path:			path to the folder where the images are saved
 # --------------------------------------------------------------------------------------------------
