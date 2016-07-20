@@ -68,6 +68,7 @@ if __name__ == '__main__':
     files = [x for x in os.listdir(folder) if os.path.isfile(os.path.join(folder, x))]
     files.sort()
     area_list = []
+
     for i in range(0, len(files), 2):
 
         print(files[i])
@@ -92,7 +93,9 @@ if __name__ == '__main__':
         cv2.imwrite(os.path.join(result_path2, result_name), filled_image)
 
     import matplotlib.pyplot as plt
+
     #area_list = nan_cleaning(area_list)
+
     plt.plot(area_list)
     plt.ylabel("size in pixels")
     plt.show()
