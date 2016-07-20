@@ -1,6 +1,6 @@
 # pupil-size-detection
 
-#Desciption
+#Description
 This project aims to automate part of the process of pupil detection and pupil area measurement that is used for detecting some diseases such as alzheimer and the use of cocaine.
 For each patient, the input is 4 videos with diferent combinations of light intensity and frequency each. For each video, one frame is captured and saved every x given seconds. The baseline area is calculated using the first x samples of the corresponding video. For each image, the percentage of baseline area is calculated using the found baseline area. The output is a graph of percentage of baseline area vs time containing all the four light exposures ([see here](http://imgur.com/MgOZ2qr)).
 
