@@ -56,6 +56,9 @@ class Ui_PDMainWindow(object):
         self.upload_button = QtGui.QPushButton(self.verticalLayoutWidget)
         self.upload_button.setObjectName(_fromUtf8("upload_button"))
         self.horizontalLayout.addWidget(self.upload_button)
+        self.pushButton = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.horizontalLayout.addWidget(self.pushButton)
         self.open_button = QtGui.QPushButton(self.verticalLayoutWidget)
         self.open_button.setObjectName(_fromUtf8("open_button"))
         self.horizontalLayout.addWidget(self.open_button)
@@ -73,5 +76,6 @@ class Ui_PDMainWindow(object):
         self.welcome_label.setText(_translate("PDMainWindow", "Welcome to Automatic Pupil Size Detection!", None))
         self.label.setText(_translate("PDMainWindow", "Click the button to Upload a video or Open to previous project", None))
         self.upload_button.setText(_translate("PDMainWindow", "Upload", None))
+        self.pushButton.setText(_translate("PDMainWindow", "Plot", None))
         self.open_button.setText(_translate("PDMainWindow", "Open Project", None))
 
