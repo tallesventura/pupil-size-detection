@@ -3,7 +3,6 @@
 import numpy as np
 import cv2
 import math
-import os
 
 
 # height shrinkage ratio
@@ -80,7 +79,7 @@ def cut_eye_pos(in_img):
 
 # ===Description: ----------------------------------------------------------------------------------
 # This function reads the original images, applies some processing and generates two new images for 
-# each original image in resul: one grayscale image and one binarized image (threshold applied)
+# each original image in result: one grayscale image and one binarized image (threshold applied)
 # ===Arguments: ------------------------------------------------------------------------------------
 # image_names:		list with the name of the images
 # src_path:			the path to the folder where the original images are saved
@@ -94,6 +93,7 @@ def run(image_names, src_path, gray_path, binarized_path):
         orig_img = cv2.imread(src_path + "/" + str(name) + ".jpg")
         # cropping the eye area
         eye = cut_eye_pos(orig_img)
+        print(eye.shape)
         # applying equalization
         resultEqualization = createClare(eye)
         img_gray = cv2.cvtColor(resultEqualization, cv2.COLOR_BGR2GRAY)
